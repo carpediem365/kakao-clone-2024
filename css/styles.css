@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import "reset.css";
+@import "status-bar.css";
+
+body{
+    font-family: "Open Sans", sans-serif;
+}
+
+.welcome-header{
+    margin-top: 145px;
+    text-align: center;
+}
+
+.welcome-header__title{
+    margin-bottom: 40px;
+}
