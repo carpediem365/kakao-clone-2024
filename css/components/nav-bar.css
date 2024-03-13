@@ -1,9 +1,4 @@
-.status-bar{
-    position:fixed;
-    width: 100%;
-    box-sizing: border-box;
-    top: 0;
-}
+
 
 .nav {
     position: fixed;
@@ -40,5 +35,10 @@
 
 .nav_dot{
     background-color: tomato;
-    
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: flex;
+    position: absolute;
+    left: 30px;
 }
