@@ -1,16 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 @import "reset.css";
-@import "status-bar.css";
-
+/* Components */
+@import "components/status-bar.css";
+@import "variables.css";
+/* Screens */
+@import "screens/login.css";
 body{
     font-family: "Open Sans", sans-serif;
 }
-
-.welcome-header{
-    margin-top: 145px;
-    text-align: center;
-}
-
-.welcome-header__title{
-    margin-bottom: 40px;
-}
+/* style.css 파일에는 font-family와 같이 모든 스크린에 적용될 수 있는 스타일을 써놓는게 니코쌤 스타일 */
