@@ -16,8 +16,11 @@
     margin-left: 25px;
 }
 
-.screen-header_icons{
+.icon-with-dot{
     position: relative;
+    display: inline-flex;
+    align-items: center;
+
 }
 .screen-header_icons_dot{
     background-color: tomato;
@@ -26,6 +29,5 @@
     border-radius: 50%;
     display: flex;
     position: absolute;
-    left: 70px;
-    bottom: 15px;
+    bottom: 10px;
 }

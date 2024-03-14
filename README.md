@@ -1,2 +1,2 @@
-# Kokoa Clone 2024 Update
+# Kakao Clone 2024 Update
 
