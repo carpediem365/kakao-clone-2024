@@ -15,3 +15,17 @@
 .screen-header_icons span{
     margin-left: 25px;
 }
+
+.screen-header_icons{
+    position: relative;
+}
+.screen-header_icons_dot{
+    background-color: tomato;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: flex;
+    position: absolute;
+    left: 70px;
+    bottom: 15px;
+}
