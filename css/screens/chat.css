@@ -182,7 +182,7 @@
 
 
 .reply:focus-within input{
-  width: 100vw;
+  width: 98vw;
   transform: translateX(-12%) translateY(-80px);
 }
 
