@@ -1,0 +1,34 @@
+@import "/css/reset.css";
+@import "/css/variables.css";
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+/* Components */
+@import "/css/components/nav-bar.css";
+@import "/css/components/screen-header.css";
+@import "/css/components/status-bar.css";
+@import "/css/components/alt-screen-header.css";
+@import "/css/components/user-component.css";
+@import "/css/components/badge.css";
+@import "/css/components/icon-row.css";
+@import "/css/components/alt-screen-header.css";
+@import "/css/components/no-mobile.css";
+
+
+/* Screens */
+@import "/css/screens/login.css";
+@import "/css/screens/friends.css";
+@import "/css/screens/find.css";
+@import "/css/screens/more.css";
+@import "/css/screens/chat.css";
+@import "/css/screens/settings.css";
+@import "/css/screens/signup.css";
+
+body{
+    color: #2e363e;
+    font-family: "Open Sans", sans-serif;
+    height: 1000vh;
+}
+/* style.css 파일에는 font-family와 같이 모든 스크린에 적용될 수 있는 스타일을 써놓는게 니코쌤 스타일 */
+
+.main-screen{
+    padding:0px var(--horizontal-space);
+}

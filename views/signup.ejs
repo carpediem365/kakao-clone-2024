@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up for Kokoa Talk</title>
+</head>
+<body>
+    <header class="welcome-header">
+        <h1 class="welcome-header__title">Sign Up for KakaoTalk</h1>
+        <p class="welcome-header__text">Create your Kakao Account</p>
+    </header>
+
+    <form action="/signup" method="post" id="signup-form">
+        <input name="userid" type="text" placeholder="Email" required />
+        <input name="password" type="password" placeholder="Password" required />
+        <input name="phonenumber" type="text" placeholder="Phone number" required />
+        <input name="username" type="text" placeholder="Name" required />
+        <input type="submit" value="Sign Up" />
+    </form>
+
+    <div id="no-mobile">
+        <span>Your screen is too big</span>
+    </div>
+
+    <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+</body>
+</html>

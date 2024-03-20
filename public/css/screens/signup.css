@@ -1,0 +1,29 @@
+#signup-form input[type="text"], 
+#signup-form input[type="password"],
+#signup-form input[type="submit"]
+{
+    width: 530px; /* 동일한 너비 설정 */
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    font-size: 18px;
+    border: none;
+    padding: 15px 0px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    margin-bottom: 25px;
+}
+
+#signup-form input:focus {
+    border-color: var(--yellow);
+}
+
+#signup-form input[type="submit"],
+.signup-link {
+    background-color: var(--yellow);
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #000;
+    text-align: center;
+}
