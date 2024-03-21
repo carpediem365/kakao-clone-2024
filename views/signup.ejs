@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="../css/styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Sign Up for Kokoa Talk</title>
 </head>
 <body>
@@ -13,7 +14,12 @@
     </header>
 
     <form action="/signup" method="post" id="signup-form">
-        <input name="userid" type="text" placeholder="Email" required />
+        <div>
+            <input name="email" type="email" id="email" placeholder="Email" required 
+                   onfocusout="checkEmail()">
+            <span id="email-msg"></span>
+        </div>
+
         <input name="password" type="password" placeholder="Password" required />
         <input name="phonenumber" type="text" placeholder="Phone number" required />
         <input name="username" type="text" placeholder="Name" required />
@@ -25,5 +31,22 @@
     </div>
 
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script>
+        function checkEmail() {
+            var email = $('#email').val();
+            console.log('체크1Checking email:', email); // 로그 추가
+            $.ajax({
+                url: '/signup/check-email',
+                method: 'POST',
+                data: { email: email },
+                success: function(response) {
+                    $('#email-msg').text(response.message);
+                },
+                error: function() {
+                    $('#email-msg').text('Error checking email.');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
