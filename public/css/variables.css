@@ -4,3 +4,11 @@
     --main-border:1px solid rgba(0, 0, 0, 0.2);
     --gray:rgba(0,0,0,0.4);
 }
+
+.error-message{
+    color: tomato;
+}
+
+.success-message{
+    color: green;
+}

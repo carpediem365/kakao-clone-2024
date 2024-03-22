@@ -14,9 +14,12 @@
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
     "express": "^4.18.3",
+    "express-session": "^1.18.0",
     "express-validator": "^7.0.1",
     "mysql": "^2.18.1",
-    "mysql2": "^3.9.2"
+    "mysql2": "^3.9.2",
+    "sequelize": "^6.37.1",
+    "session": "^0.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

@@ -15,16 +15,24 @@
 
     <form action="/signup" method="post" id="signup-form">
         <div>
-            <input name="email" type="email" id="email" placeholder="Email" required 
-                   onfocusout="checkEmail()">
-            <span id="email-msg"></span>
+            <input name="userId" type="text" id="userId" placeholder="userId" 
+                   value="<%= prevInput && prevInput.userId ? prevInput.userId : '' %>" required 
+                   onfocusout="checkuserId()">
+                   <span id="userId-msg" class="<%= isError ? 'error-message' : '' %>"><%= errorMessage ? errorMessage : '' %></span>
         </div>
 
-        <input name="password" type="password" placeholder="Password" required />
-        <input name="phonenumber" type="text" placeholder="Phone number" required />
-        <input name="username" type="text" placeholder="Name" required />
-        <input type="submit" value="Sign Up" />
+        <input name="password" type="password" id="password" placeholder="Password" 
+        value="<%= prevInput ? prevInput.password : '' %>" onchange="checkPasswordMatch()" required />
+        <input name="confirmPassword" type="password" id="confirmPassword" placeholder="Confirm Password" 
+        onchange="checkPasswordMatch()" required />
+        <span id="password-msg"></span>    
+        <input name="phoneNumber" type="text" placeholder="Phone Number" 
+               value="<%= prevInput ? prevInput.phoneNumber : '' %>" required />
+        <input name="userName" type="text" placeholder="Name" 
+               value="<%= prevInput ? prevInput.username : '' %>" required />
+        <input type="submit" value="Sign Up"  id="signup_submit-button" />
     </form>
+
 
     <div id="no-mobile">
         <span>Your screen is too big</span>
@@ -32,20 +40,41 @@
 
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
     <script>
-        function checkEmail() {
-            var email = $('#email').val();
-            console.log('체크1Checking email:', email); // 로그 추가
+        function checkuserId() {
+            var userId = $('#userId').val();
             $.ajax({
-                url: '/signup/check-email',
+                url: '/signup/check-userId',
                 method: 'POST',
-                data: { email: email },
+                data: { userId: userId },
                 success: function(response) {
-                    $('#email-msg').text(response.message);
+                    var userIdMsg = $('#userId-msg');
+                    userIdMsg.removeClass('error-message success-message');
+                    if(response.message === '이미 사용중인 아이디입니다.') {
+                        userIdMsg.addClass('error-message').text(response.message);
+                        submitButton.prop('disabled', true); // 이메일 중복 시 버튼 비활성화
+                    } else {
+                        userIdMsg.addClass('success-message').text(response.message);
+                        submitButton.prop('disabled', false); // 이메일 중복이 아닐 경우 버튼 활성화
+                    }
                 },
                 error: function() {
-                    $('#email-msg').text('Error checking email.');
+                    userIdMsg.text('Error checking userId.');
                 }
             });
+        }
+
+        function checkPasswordMatch() {
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmPassword').val();
+            var passwordMsg = $('#password-msg');
+            var submitButton = $('#signup_submit-button');
+            if(password !== confirmPassword) {
+                passwordMsg.text('비밀번호가 일치하지 않습니다.').addClass('error-message');
+                submitButton.prop('disabled', true); // 비밀번호 불일치 시 버튼 비활성화
+            } else {
+                passwordMsg.text('').removeClass('error-message');
+                submitButton.prop('disabled', false); // 비밀번호 일치 시 버튼 활성화
+            }
         }
     </script>
 </body>
