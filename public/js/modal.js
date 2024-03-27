@@ -1,0 +1,169 @@
+// modal.js 파일에 추가
+// 모달 열기 함수
+function openModal() {
+    document.getElementById('addFriendModal').style.display = 'block';
+}
+
+// 모달 닫기 함수
+function closeModal() {
+    document.getElementById('addFriendModal').style.display = 'none';
+}
+
+// 모달 바깥쪽 클릭 시 모달 닫기
+window.onclick = function(event) {
+    if (event.target == document.getElementById('addFriendModal')) {
+        closeModal();
+    }
+}
+
+// 친구 추가 모달 열기 버튼에 이벤트 리스너 추가
+document.querySelector('.fa-user-plus').addEventListener('click', openModal);
+
+// 모달 닫기 버튼에 이벤트 리스너 추가
+document.querySelector('.close-button').addEventListener('click', closeModal);
+
+// 친구 ID 입력 필드에 키업 이벤트 리스너 추가
+document.addEventListener('DOMContentLoaded', function() {
+    const friendIdInput = document.getElementById('friendId');
+    const counter = document.querySelector('.character-counter');
+  
+    // 입력 필드에 글자 입력 시 실행되는 함수
+    friendIdInput.addEventListener('keyup', function() {
+        const length = this.value.length;
+        const maxLength = this.getAttribute('maxlength');
+        counter.textContent = `${length}/${maxLength}`;
+    });
+});
+
+// 친구 ID 입력 필드
+
+
+// 친구 추가 폼 이벤트 리스너
+document.getElementById('addFriendForm').addEventListener('submit', function(e) {
+    const friendId = document.getElementById('friendId').value;
+    e.preventDefault(); // 폼의 기본 제출 동작 막기
+    checkUserAndShowAddButton(friendId);
+});
+
+// 사용자 존재 여부 확인 및 친구 추가 버튼 표시 함수
+function checkUserAndShowAddButton(friendId) {
+    fetch(`/friends/check-user/${friendId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.exists){
+            console.log("data.exists임",data.exists);
+            console.log("data.userInfo임",data.userInfo);
+            displayUserInfo(data.userInfo);
+            document.querySelector('.add-friend-button').onclick = function() {
+                performAddFriend(friendId); // 친구 추가 실행
+            };
+        } else {
+            displayError(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error check:', error);
+        displayError(data.message);
+    });
+}
+
+// 사용자 정보 표시 및 친구 추가 버튼 활성화 함수
+function displayUserInfo(userInfo) {
+    // 사용자 정보 표시 로직
+    const userInfoDisplay = document.querySelector('.user-info-display');
+    userInfoDisplay.innerHTML = `<img src="${userInfo.profile_img_url}" alt="Profile Image" />
+                                 <p>${userInfo.name}</p>
+                                 <button class="add-friend-button" style="display: none;">친구 추가</button>`;
+
+    // 친구 추가 버튼 활성화
+    const addFriendButton = document.querySelector('.add-friend-button');
+    addFriendButton.style.display = 'block';
+
+    // 에러메시지 none처러 
+    const errorMsgElement = document.querySelector('.add-friend_error-msg');
+    errorMsgElement.style.display = 'none';
+}
+
+// 친구 추가 실행 함수
+function performAddFriend(friendId) {
+    fetch('/friends/add-friend', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ friendId: friendId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            alert('친구가 추가되었습니다.');
+            closeModal();
+            window.location.reload(); // 페이지 새로고침
+        }else{
+            displayError(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        displayError('친구 추가 중 오류가 발생했습니다.');
+    });
+}
+
+// 에러 메시지 표시 함수
+function displayError(message) {
+     // 오류 메시지 표시
+    const errorMsgElement = document.querySelector('.add-friend_error-msg');
+    errorMsgElement.style.display = 'flex';
+    errorMsgElement.textContent = message;
+
+    // 사용자 정보 영역 초기화
+    const userInfoDisplay = document.querySelector('.user-info-display');
+    userInfoDisplay.innerHTML = '';
+
+    // 친구 추가 버튼을 찾고, 있으면 숨김
+    const addFriendButton = document.querySelector('.add-friend-button');
+    if (addFriendButton) {
+        addFriendButton.style.display = 'none';
+    }
+}
+
+// 친구 추가 함수
+function addFriend() {
+    const friendId = document.getElementById('friendId').value;
+    fetch('/friends/add-friend', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ friendId: friendId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            console.log("데이터data:", data);
+            console.log("데이터data:", data.success);
+            alert('친구가 추가되었습니다.');
+            closeModal();
+            window.location.reload(); // 페이지 새로고침
+        }else{
+           // 친구 추가 실패 메시지 표시
+           console.log("modal error",data.message);
+           console.log("데이터data:", data);
+           console.log("데이터data:", data.success);
+           const errorMsgElement = document.querySelector('.add-friend_error-msg');
+           errorMsgElement.textContent = data.message;
+        }
+        
+    })
+    .catch(error => {
+        console.log('Error modal5:', error); // 에러 처리
+        const errorMsgElement = document.querySelector('.add-friend_error-msg');
+        errorMsgElement.textContent = '친구 추가 요청 처리 중 오류가 발생했습니다.';
+    });
+}
+

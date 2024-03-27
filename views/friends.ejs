@@ -28,7 +28,7 @@
         <h1 class="screen-header__title">Friends</h1>
         <div class="screen-header__icons">
             <span><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
-            <span><i class="fa-solid fa-music fa-lg"></i></span>
+            <span><i class="fa-solid fa-user-plus"></i></span>
             <span><i class="fa-solid fa-gear fa-lg"></i></span>
         </div>
     </header>
@@ -43,38 +43,39 @@
         <div class="user-component">
             <div class="user-component__column">
               <img
-              src="../image/profile.jpg"
+              src="<%= profile.profile_img_url ? profile.profile_img_url : '/images/basic_profile.jpg' %>"
                 class="user-component__avatar user-component__avatar--xl"
               />
               <div class="user-component__text">
-                <h4 class="user-component__title">김도운</h4>
+                <h4 class="user-component__title"><%= profile.name %></h4>
+                <p><%= profile.status_message %></p>
                 <!-- <h6 class="user-component__subtitle">this text whatever</h6> -->
               </div>
             </div>
             <div class="user-component__column"></div>  
           </div>
-        <div class="friends-screen__channel">
-            <div class="friends-screen__channel-header">
-                <span>Channel</span>
-                <i class="fa-solid fa-chevron-up fa-xs"></i>
+        <div class="friends-screen__list">
+            <div class="friends-screen__list-header">
+                <span>친구</span>
+                <span><%= friends.totalFriends %></span>
             </div>
+            <% friends.friendsList.forEach(function(friend) { %>
             <div class="user-component">
                 <div class="user-component__column">
                   <img
-                  src="../image/profile.jpg"
+                  src="<%= friend.profile_img_url ? friend.profile_img_url : '/images/basic_profile.jpg' %>" alt="Friend Image"
                     class="user-component__avatar user-component__avatar--sm"
                   />
                   <div class="user-component__text">
-                    <h4 class="user-component__title user-component__title--not-bold">Channel</h4>
+                    <h4 class="user-component__title user-component__title--not-bold"><%= friend.friend_name %></h4>
+                    <p><%= friend.status_message %></p>
                   </div>
                 </div>
                 <div class="user-component__column">
-                    <div>
-                        <span>2</span>
-                        <i class="fa-solid fa-chevron-right fa-xs"></i>
-                    </div>
+
                 </div>
               </div>
+              <% }); %>
         </div>
     </main>
 
@@ -107,7 +108,28 @@
         <span>Your screen is too big</span>
     </div>
 
+    <div id="addFriendModal" class="modal">
+        <div class="modal-content">
+          <span class="close-button">&times;</span>
+          <h2>친구 추가</h2>
+          <div class="model-content_div"><span class="modal-content_choice">ID로 추가</span></div>
+          <form id="addFriendForm" method="post">
+                <input type="text" id="friendId" name="friendId"  maxlength="20" autofocus>
+                <span class="character-counter">0/20</span>
+          </form>
+          <div class="user-info-display">
+            <!-- 사용자 정보 표시 영역 -->
+            
+        </div>
+        <div class="add-friend">
+            <div class="add-friend_error-msg"></div>
+            
+        </div>
+        </div>
+      </div>
+
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script src="/js/modal.js"></script>
     <!-- font awesome code kit -->
 </body>
 </html>

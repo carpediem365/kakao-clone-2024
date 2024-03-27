@@ -31,8 +31,11 @@
     <form action="/login" method="post" id="login-form">
         <input name="userId" type="text" placeholder="Email or phone number"/>
         <input name="password" type="password" placeholder="password"/>
+        <span class="login_error-msg">
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+            <%= errorMessage %>
+            <% } %></span>   
         <input type="submit" value="Log In" />
-        
     </form>
 
     <!-- 회원가입 링크 -->
@@ -44,5 +47,7 @@
     </div>
 
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script>
+    </script>
 </body>
 </html>

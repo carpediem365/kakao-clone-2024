@@ -11,13 +11,14 @@
   .user-component__avatar {
     width: 70px;
     height: 70px;
-    border-radius: 30px;
+    border-radius: 25px;
     margin-right: 20px;
   }
   
   .user-component__title {
     font-weight: 600;
     font-size: 22px;
+    margin-bottom: 10px;
   }
   
 
@@ -37,7 +38,7 @@
   .user-component__avatar--sm {
     width: 60px;
     height: 60px;
-    border-radius: 25px;
+    border-radius: 20px;
   }
   
   .user-component__title--not-bold {
@@ -69,4 +70,8 @@
     border: 2px solid tomato;
     margin-left: 10px;
     padding: 1px;
+  }
+
+  .user-component{
+    margin-bottom: 20px;
   }

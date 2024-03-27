@@ -14,6 +14,7 @@ app.set('views', 'views');
 // 미들웨어 설정
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
 // 세션 설정
 app.use(session({
@@ -26,7 +27,7 @@ app.use(session({
 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views/login.html'));
+  res.render('login'); 
   });
   
 
