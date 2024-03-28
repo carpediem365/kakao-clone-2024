@@ -56,34 +56,42 @@ function checkUserAndShowAddButton(friendId) {
     .then(response => response.json())
     .then(data => {
         if(data.exists){
-            console.log("data.exists임",data.exists);
-            console.log("data.userInfo임",data.userInfo);
-            displayUserInfo(data.userInfo);
-            document.querySelector('.add-friend-button').onclick = function() {
-                performAddFriend(friendId); // 친구 추가 실행
-            };
+            if(data.message ==="본인의 ID로는 친구 추가를 할 수 없습니다." || data.message ==="이미 친구로 등록된 ID입니다."){
+                displayUserInfo(data.userInfo, true); // 채팅 버튼 표시
+            }else{
+                displayUserInfo(data.userInfo);
+                document.querySelector('.add-friend-button').onclick = function() {
+                    performAddFriend(friendId); // 친구 추가 실행
+                };
+            }
+            
         } else {
+            console.log("여기인가1");
             displayError(data.message);
         }
     })
     .catch(error => {
         console.error('Error check:', error);
-        displayError(data.message);
+        displayError(error.message);
     });
 }
 
 // 사용자 정보 표시 및 친구 추가 버튼 활성화 함수
-function displayUserInfo(userInfo) {
+function displayUserInfo(userInfo, displayChat = false) {
     // 사용자 정보 표시 로직
     const userInfoDisplay = document.querySelector('.user-info-display');
     userInfoDisplay.innerHTML = `<img src="${userInfo.profile_img_url}" alt="Profile Image" />
                                  <p>${userInfo.name}</p>
-                                 <button class="add-friend-button" style="display: none;">친구 추가</button>`;
+                                 `;
 
-    // 친구 추가 버튼 활성화
-    const addFriendButton = document.querySelector('.add-friend-button');
-    addFriendButton.style.display = 'block';
-
+    // 채팅 또는 친구 추가 버튼 표시
+    if (displayChat) {
+        // '1대1 채팅하기' 버튼 표시
+        userInfoDisplay.innerHTML += `<button class="user-info-display_chat-button">1대1 채팅하기</button>`;
+    } else {
+        // '친구 추가' 버튼 표시
+        userInfoDisplay.innerHTML += `<button class="add-friend-button">친구 추가</button>`;
+    }                           
     // 에러메시지 none처러 
     const errorMsgElement = document.querySelector('.add-friend_error-msg');
     errorMsgElement.style.display = 'none';

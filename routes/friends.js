@@ -7,7 +7,6 @@ router.get('/', async (req, res) => {
     if (!req.session.user) {
       return res.redirect('/login'); // 사용자가 로그인하지 않았다면 로그인 페이지로 리다이렉트
     }
-  
     const loggedInUser = req.session.user;
     console.log("logged in user: ", loggedInUser);
     try {
@@ -37,9 +36,10 @@ router.get('/check-user/:friendId', async (req, res) => {
 
     try {
         const checkResult = await User.checkUserAndFriendship(userId, friendId);
+        console.log("checkResult값:",checkResult)
         res.json(checkResult);
     } catch (error) {
-        console.error(error);
+        console.error("여기인가3",error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -58,7 +58,7 @@ router.post('/add-friend', async (req, res) => {
       const result = await User.addFriend(userId, friendId);
       console.log("result1",result);
       if (result) {
-        res.json({ success: true, message: '친구가 추가되었습니다.' });
+        res.json({ success: true});
       } else {
         console.log("실패result",result);
         res.status(400).json({ success: false, message: '친구 추가에 실패했습니다.' });

@@ -143,9 +143,13 @@ class User {
       // 이미 친구인지 여부 확인
       const [alreadyFriends] = await conn.execute('SELECT * FROM friend WHERE my_id = ? AND friend_id = ?', [userId, friendId]);
       if (alreadyFriends.length > 0) {
-          throw new Error(`'${friendId}'는 이미 친구로 등록된 ID입니다.`);
+        return { exists: true, userInfo: friendExists[0], message: "이미 친구로 등록된 ID입니다." };
       }
 
+      // 본인 id인지 여부확인
+      if(userId === friendId){
+        return { exists: true, userInfo: friendExists[0], message: '본인의 ID로는 친구 추가를 할 수 없습니다.' };
+      }
       // 모든 체크가 통과되면 사용자 정보 반환
       return { exists: true, userInfo: friendExists[0] };
   } catch (error) {
