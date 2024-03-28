@@ -60,7 +60,7 @@
     margin-right: 5px;
 }
 
-/* styles.css 파일에 추가 */
+/* addFriendModal */
 .modal {
     display: none;
     position: fixed;
@@ -74,17 +74,17 @@
     background-color: rgba(0,0,0,0.4);
   }
   
-  .modal-content {
+  .addFriendModal-content {
     background-color: #fefefe;
     margin: 30% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 360px;
+    width: 300px;
     height: 400px;
-    max-width: 300px;
+ 
   }
   
-  .modal-content h2{
+  .addFriendModal-content h2{
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 50px;
@@ -103,31 +103,17 @@
     cursor: pointer;
   }
   
-  .character-counter {
-    text-align: right;
+  .addFriendForm-counter {
+    width: 15%;
+    text-align: center;
   }
   
-  .modal-submit-button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #555;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .modal-submit-button:hover {
-    background-color: #666666;
-  }
-  
- 
   #addFriendForm{
     width: 90%;
     border-bottom: 2px solid rgb(0,0,0);
     margin: 30px auto;
     display: flex; /* 플렉스 컨테이너로 설정 */
-  align-items: center; /* 아이템들을 수직 중앙에 위치시킴 */
+    align-items: center; /* 아이템들을 수직 중앙에 위치시킴 */
   }
 
   #addFriendForm input {
@@ -137,20 +123,14 @@
     width: 85%;
   }
 
-  .character-counter{
-    display: inline-block;
-    width: 15%;
-    text-align: center;
-  }
-
-  .modal-content_choice {
+  .addFriendModal-content_choice {
     display: inline-block;
     font-size: 13px;
     font-weight: bold;
     border-bottom: 1px solid rgb(0, 0, 0);
     padding: 10px 0px;
   }
-.model-content_div{
+.addFriendModal-content_div{
     padding: 0px 20px;
     border-bottom: 1px solid rgb(220, 220, 220);
     margin: -17px;
@@ -199,6 +179,90 @@
   cursor: pointer;
 }
 
-.modal-content{
+.addFriendModal-content{
   position: relative;
+}
+/* addFriendModal  끝*/
+/* -------------------------------- */
+/* 프로필 수정 css */
+
+.profileEditModal {
+  display: none; /* Start hidden */
+  position: fixed;
+  z-index: 2; /* Above everything else */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow: auto;
+  background-color: rgb(200, 200, 200);/* Black with opacity */
+}
+
+.profileEditModal-content {
+  background-color: rgb(122, 119, 119);
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  height: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.profileEditModal-close-button {
+  color: #777;
+  float: right;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.profileEditModal-close-button:hover,
+.profileEditModal-close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profileEditModal-header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.profileEditModal-body {
+  text-align: center;
+  padding: 10px 20px;
+  margin-top: 110px;
+}
+
+.profileEditModal-profile-img {
+
+  margin-left: auto;
+  margin-right: auto;
+  width: 80px; /* Adjust as needed */
+  height: 80px; /* Adjust as needed */
+  border-radius: 25%;
+  margin-bottom: 20px;
+}
+
+.profileEditModal-edit-profile{
+  font-size: 18px;
+  color: #333;
+  padding: 5px 2px;
+  display: block;
+  cursor: pointer;
+}
+.profileEditModal-edit-statusMessage,
+.profileEditModal-chat-text {
+  font-size: 14px;
+  color: #333;
+  padding: 5px 0;
+  display: block;
+  cursor: pointer;
+}
+
+.profileEditModal-body_div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

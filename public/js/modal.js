@@ -1,31 +1,31 @@
 // modal.js 파일에 추가
 // 모달 열기 함수
-function openModal() {
+function openAddFriendModal() {
     document.getElementById('addFriendModal').style.display = 'block';
 }
 
 // 모달 닫기 함수
-function closeModal() {
+function  closeAddFriendModal() {
     document.getElementById('addFriendModal').style.display = 'none';
 }
 
 // 모달 바깥쪽 클릭 시 모달 닫기
 window.onclick = function(event) {
     if (event.target == document.getElementById('addFriendModal')) {
-        closeModal();
+        closeAddFriendModal();
     }
 }
 
 // 친구 추가 모달 열기 버튼에 이벤트 리스너 추가
-document.querySelector('.fa-user-plus').addEventListener('click', openModal);
+document.querySelector('.fa-user-plus').addEventListener('click', openAddFriendModal);
 
 // 모달 닫기 버튼에 이벤트 리스너 추가
-document.querySelector('.close-button').addEventListener('click', closeModal);
+document.querySelector('#addFriendModal .close-button').addEventListener('click', closeAddFriendModal);
 
 // 친구 ID 입력 필드에 키업 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
     const friendIdInput = document.getElementById('friendId');
-    const counter = document.querySelector('.character-counter');
+    const counter = document.querySelector('.addFriendForm-counter');
   
     // 입력 필드에 글자 입력 시 실행되는 함수
     friendIdInput.addEventListener('keyup', function() {

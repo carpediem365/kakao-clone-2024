@@ -44,7 +44,7 @@
             <div class="user-component__column">
               <img
               src="<%= profile.profile_img_url ? profile.profile_img_url : '/images/basic_profile.jpg' %>"
-                class="user-component__avatar user-component__avatar--xl"
+                class="user-component__avatar user-component__avatar--xl" id="profileImg"
               />
               <div class="user-component__text">
                 <h4 class="user-component__title"><%= profile.name %></h4>
@@ -108,14 +108,15 @@
         <span>Your screen is too big</span>
     </div>
 
+    <!-- 친구추가 모달 -->
     <div id="addFriendModal" class="modal">
-        <div class="modal-content">
+        <div class="addFriendModal-content">
           <span class="close-button">&times;</span>
           <h2>친구 추가</h2>
-          <div class="model-content_div"><span class="modal-content_choice">ID로 추가</span></div>
+          <div class="addFriendModal-content_div"><span class="addFriendModal-content_choice">ID로 추가</span></div>
           <form id="addFriendForm" method="post">
                 <input type="text" id="friendId" name="friendId"  maxlength="20" autofocus>
-                <span class="character-counter">0/20</span>
+                <span class="addFriendForm-counter">0/20</span>
           </form>
           <div class="user-info-display">
             <!-- 사용자 정보 표시 영역 -->
@@ -128,8 +129,37 @@
         </div>
       </div>
 
+
+      <!-- 프로필 수정 모달 -->
+      <div id="profileEditModal" class="profileEditModal">
+        <div class="profileEditModal-content">
+            <div class="profileEditModal-header">
+                <i class="fas fa-image"></i>
+                <span class="profileEditModal-close-button">&times;</span>
+            </div>
+            <div class="profileEditModal-body">
+                <img src="/images/basic_profile.jpg" alt="Profile Image" class="profileEditModal-profile-img">
+                <div class="profileEditModal-body_div">
+                    <p class="profileEditModal-edit-profile">프로필 편집 </p>
+                    <i class="fas fa-pen"></i>
+                </div>
+                <div class="profileEditModal-body_div">
+                    <p class="profileEditModal-edit-statusMessage">상태메시지 편집 </p>
+                    <i class="fas fa-pen"></i>
+                </div>
+            </div>
+            <div class="profileEditModal-chat">
+                <i class="fas fa-comment"></i>
+                <p class="profileEditModal-chat-text">나와의 채팅</p>
+            </div>
+        </div>
+    </div>
+    
+
+      
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
     <script src="/js/modal.js"></script>
+    <script src="/js/profileModal.js"></script>
     <!-- font awesome code kit -->
 </body>
 </html>
