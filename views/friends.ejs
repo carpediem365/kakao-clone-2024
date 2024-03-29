@@ -135,21 +135,29 @@
         <div class="profileEditModal-content">
             <div class="profileEditModal-header">
                 <i class="fas fa-image"></i>
+                <div class="profileEditModal-header_img_choice">
+                    <label><p class="realImg-upload">사진 변경</p><input type="file" id="backgroundImageInput" accept=".bmp, .png, .jpg, .jpeg" ></label>
+                    <p class="img_upload">기본 이미지로 변경</p>
+                </div>
                 <span class="profileEditModal-close-button">&times;</span>
             </div>
             <div class="profileEditModal-body">
                 <img src="/images/basic_profile.jpg" alt="Profile Image" class="profileEditModal-profile-img">
+                <div class="profileEditModal-body_img_choice">
+                    <label><p class="realImg-upload">사진 변경</p><input type="file" id="profileImageInput" accept=".bmp, .png, .jpg, .jpeg" ></label>
+                    <p class="img_upload">기본 이미지로 변경</p>
+                </div>
                 <div class="profileEditModal-body_div">
                     <p class="profileEditModal-edit-profile">프로필 편집 </p>
                     <i class="fas fa-pen"></i>
                 </div>
                 <div class="profileEditModal-body_div">
-                    <p class="profileEditModal-edit-statusMessage">상태메시지 편집 </p>
+                    <p class="profileEditModal-edit-statusMessage">상태메시지</p>
                     <i class="fas fa-pen"></i>
                 </div>
             </div>
             <div class="profileEditModal-chat">
-                <i class="fas fa-comment"></i>
+                <i class="fas fa-comment fa-lg"></i>
                 <p class="profileEditModal-chat-text">나와의 채팅</p>
             </div>
         </div>
