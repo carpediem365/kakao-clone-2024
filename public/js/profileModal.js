@@ -1,21 +1,41 @@
+// 페이지 로드 완료 시 이벤트 리스너 설정
+document.addEventListener('DOMContentLoaded', initializeEventListeners);
+
+
+function initializeEventListeners() {
+    console.log('DOM fully loaded and parsed');
+    setupImageChangeTriggers();
+    setupModalContentClick();
+    editProfileKeyup();
+
+}
+
 // 페이지 로드 시 모달을 열고, 세션 정보로 입력 필드를 채우는 함수입니다.
 // 모달 열기 함수
 function openProfileEditModal() {
     document.getElementById('profileEditModal').style.display = 'block';
+
 }
 
 // 모달 닫기 함수
 function closeProfileEditModal() {
     document.getElementById('profileEditModal').style.display = 'none';
+    // 이미지 선택 옵션 숨김
+    document.querySelector('.profileEditModal-header_img_choice').style.display = 'none';
+    document.querySelector('.profileEditModal-body_img_choice').style.display = 'none';
+    
+
 }
 
 
 // 모달 바깥쪽 클릭 시 모달 닫기
 window.onclick = function(event) {
-    if (event.target == document.getElementById('profileEditModal')) {
+    const profileEditModal = document.getElementById('profileEditModal');
+    if (event.target == profileEditModal) {
         closeProfileEditModal();
-        setupImageChangeTriggers();
+        document.querySelector('.profileEditModal-body_edit').style.display = 'none';
     }
+
 }
     // 프로필 이미지 클릭 시 모달 표시
     document.getElementById('profileImg').addEventListener('click', openProfileEditModal);
@@ -44,26 +64,16 @@ function handleBackgroundImageChange(event) {
     reader.readAsDataURL(event.target.files[0]);
 }
 
-// 기본 이미지로 변경
-function setDefaultImage(isProfileImage) {
-    if (isProfileImage) {
-        document.querySelector('.profileEditModal-profile-img').src = '/images/basic_profile.jpg';
-    } else {
-        // 배경 이미지를 기본 이미지로 설정
-        document.querySelector('.profileEditModal-content').style.backgroundImage = `url('/images/default_background.jpg')`;
-    }
-}
-
 // 파일 입력 필드에 이벤트 리스너 추가
 document.getElementById('profileImageInput').addEventListener('change', handleProfileImageChange);
 document.getElementById('backgroundImageInput').addEventListener('change', handleBackgroundImageChange);
 
 // 기본 이미지 설정 버튼에 이벤트 리스너 추가
 document.querySelector('.profileEditModal-header .img_upload').addEventListener('click', function() {
-    setDefaultImage(true);
+    document.querySelector('.profileEditModal-content').style.backgroundImage = `url('/images/default_background.png')`;
 });
 document.querySelector('.profileEditModal-body .img_upload').addEventListener('click', function() {
-    setDefaultImage(false);
+    document.querySelector('.profileEditModal-profile-img').src = '/images/basic_profile.jpg';
 });
 
 // 이벤트 리스너를 추가하는 함수
@@ -97,9 +107,63 @@ function setupModalContentClick() {
     });
 }
 
+    // 프로필 편집 아이콘 클릭 이벤트
+    document.querySelector('.edit-profile-name').addEventListener('click', function() {
+        // 현재 프로필 이름 가져오기
+        var currentName = document.querySelector('.profileEditModal-edit-profile').textContent;
+        console.log("currentName:",currentName);
+        // 편집 모달에 현재 프로필 이름 설정
+        document.getElementById('editProfile').value = currentName;
+        // 편집 모달 열기
+        document.querySelector('.profileEditModal-body_edit').style.display = 'block'
+        const editProfileInput = document.getElementById('editProfile');
+        const length = editProfileInput.value.length;
+        const maxLength = editProfileInput.getAttribute('maxlength');
+        document.querySelector('.editProfile-counter').textContent = `${length}/${maxLength}`; 
+      });
+      
+      // 상태 메시지 편집 아이콘 클릭 이벤트
+      document.querySelector('.edit-statusMessage').addEventListener('click', function() {
+        // 현재 상태 메시지 가져오기
+        var currentStatusMessage = document.querySelector('.profileEditModal-edit-statusMessage').textContent;
+        // 편집 모달에 현재 상태 메시지 설정
+        document.getElementById('editProfile').value = currentStatusMessage;
+        // 편집 모달 열기
+        document.querySelector('.profileEditModal-body_edit').style.display = 'block'
+        const editProfileInput = document.getElementById('editProfile');
+        const length = editProfileInput.value.length;
 
-// 페이지 로드 완료 시 이벤트 리스너 설정
+        const maxLength = editProfileInput.getAttribute('maxlength');
+        document.querySelector('.editProfile-counter').textContent = `${length}/${maxLength}`; 
+      });
+
+      document.querySelector('.profileEditModal-body_edit-close-button').addEventListener('click', function() {
+        document.querySelector('.profileEditModal-body_edit').style.display = 'none';
+      });
+
+
+      // 이름,상태메시지 수정 입력 필드에 키업 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', function() {
-    setupImageChangeTriggers(); // 이미지 변경 이벤트 리스너 설정
-    setupModalContentClick();
+    
+});
+function editProfileKeyup()
+{
+    const editProfileInput = document.getElementById('editProfile');
+    const counter = document.querySelector('.editProfile-counter');
+  
+    // 입력 필드에 글자 입력 시 실행되는 함수
+    editProfileInput.addEventListener('keyup', function() {
+        const length = this.value.length;
+        const maxLength = this.getAttribute('maxlength');
+        counter.textContent = `${length}/${maxLength}`;
+    });
+}
+
+document.querySelectorAll('.friend-profile').forEach(function(profile) {
+    profile.addEventListener('click', function() {
+        // 친구 정보 로드 및 모달창 표시 로직
+        // 현재 클릭된 프로필의 친구 ID 가져오기
+        var friendId = this.friend;
+        console.log("friendId1:",friendId);
+    });
 });

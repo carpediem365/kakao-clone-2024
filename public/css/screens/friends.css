@@ -64,7 +64,7 @@
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 100;
     left: 0;
     top: 0;
     width: 100%;
@@ -189,7 +189,7 @@
 .profileEditModal {
   display: none; /* Start hidden */
   position: fixed;
-  z-index: 2; /* Above everything else */
+  z-index: 100; /* Above everything else */
   left: 0;
   top: 0;
   width: 100%;
@@ -201,7 +201,7 @@
 
 
 .profileEditModal-content {
-  
+  position: relative;
   color: rgb(255, 255, 255);
   background-color: rgb(132, 139, 145);
   margin: 25% auto;
@@ -212,6 +212,7 @@
   background-size: cover; /* 이미지가 div 크기에 맞게 조정됩니다. */
   background-position: center; /* 이미지가 div의 중앙에 위치하도록 합니다. */
   background-repeat: no-repeat; /* 이미지가 반복되지 않도록 합니다. */
+
 }
 
 
@@ -305,7 +306,7 @@
   border: 1px solid rgb(100, 100, 100);
   background: rgb(255, 255, 255);
   text-align: start;
-  z-index: 99;
+  z-index: 100;
   left: 160px;
   top: 180px;
   display: none;
@@ -328,4 +329,72 @@
 .profileEditModal-header_img_choice input,
 .profileEditModal-body_img_choice input{
   display: none;
+}
+
+.profileEditModal-body_edit{
+  position: absolute;
+  bottom: 0px;
+  background: rgb(0, 0, 0);
+  border: 1px solid rgb(150, 150, 150);
+  width: 100%;
+  height: 150px;
+  z-index: 100;
+}
+
+.profileEditModal-body_edit {
+  position: absolute;
+  display: none;
+  bottom: 0px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(150, 150, 150);
+  color: rgb(0, 0, 0);
+  width: 100%;
+  height: 150px;
+  z-index: 100;
+}
+
+.profileEditModal-body_edit-close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 15px;
+  color: rgb(0, 0, 0);
+  z-index: 100;
+  cursor: pointer;
+}
+
+.profileEditModal-body_edit div {
+  width: 90%;
+  border: 1px solid rgb(52, 152, 219);
+  margin: 50px auto;
+}
+
+.profileEditModal-body_edit div input{
+  width: 75%;
+  outline: none;
+  border: none;
+  padding: 5px;
+}
+
+.profileEditModal-body_edit div span{
+  display: inline-block;
+    width: 15%;
+    text-align: center;
+    padding: 5px;
+}
+
+.profileEditModal-body_edit div button{
+  width: 10%;
+  cursor: pointer;
+  padding: 5px;
+  border: none;
+  outline: none;
+}
+
+.profileEditModal-body_edit div button:hover{
+  background: rgb(220, 220, 220);
+}
+
+.fas{
+  font-weight: 900;
 }

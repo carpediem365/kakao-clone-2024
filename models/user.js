@@ -91,6 +91,7 @@ class User {
         f.friend_id, 
         f.friend_name, 
         u.profile_img_url,
+        u.background_img_url,
         u.status_message
     FROM 
         friend AS f
@@ -121,7 +122,7 @@ class User {
   static async getProfileInfo(userId) {
     try {
       const conn = await connect();
-      const sql = 'SELECT name, status_message, profile_img_url FROM user WHERE user_id = ?';
+      const sql = 'SELECT name, status_message, profile_img_url,background_img_url FROM user WHERE user_id = ?';
       const [profile] = await conn.execute(sql, [userId]);
       conn.end();
       return profile[0];
@@ -158,30 +159,30 @@ class User {
   }
 }
 
-static async addFriend(userId, friendId) {
-  try {
-      const conn = await connect();
-      // 친구 ID 존재 여부 확인
-      const [friendExists] = await conn.execute('SELECT * FROM user WHERE user_id = ?', [friendId]);
-      if (friendExists.length === 0) {
-          throw new Error(`'${friendId}'는 존재하지 않는 ID입니다.`);
-      }
+// static async addFriend(userId, friendId) {
+//   try {
+//       const conn = await connect();
+//       // 친구 ID 존재 여부 확인
+//       const [friendExists] = await conn.execute('SELECT * FROM user WHERE user_id = ?', [friendId]);
+//       if (friendExists.length === 0) {
+//           throw new Error(`'${friendId}'는 존재하지 않는 ID입니다.`);
+//       }
 
-      // 이미 친구인지 여부 확인
-      const [alreadyFriends] = await conn.execute('SELECT * FROM friend WHERE my_id = ? AND friend_id = ?', [userId, friendId]);
-      if (alreadyFriends.length > 0) {
-          throw new Error(`'${friendId}'는 이미 친구로 등록된 ID입니다.`);
-      }
+//       // 이미 친구인지 여부 확인
+//       const [alreadyFriends] = await conn.execute('SELECT * FROM friend WHERE my_id = ? AND friend_id = ?', [userId, friendId]);
+//       if (alreadyFriends.length > 0) {
+//           throw new Error(`'${friendId}'는 이미 친구로 등록된 ID입니다.`);
+//       }
 
-      // 친구추가
-      const result = await conn.execute('INSERT INTO friend (my_id, friend_id) VALUES (?, ?)', [userId, friendId]);
-      conn.end();
-      return result[0].affectedRows > 0;
-  } catch (error) {
-      console.error('친구 추가 중 에러 발생:', error);
-      throw error;
-  }
-}
+//       // 친구추가
+//       const result = await conn.execute('INSERT INTO friend (my_id, friend_id) VALUES (?, ?)', [userId, friendId]);
+//       conn.end();
+//       return result[0].affectedRows > 0;
+//   } catch (error) {
+//       console.error('친구 추가 중 에러 발생:', error);
+//       throw error;
+//   }
+// }
 }
 
 

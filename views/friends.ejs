@@ -60,10 +60,10 @@
                 <span><%= friends.totalFriends %></span>
             </div>
             <% friends.friendsList.forEach(function(friend) { %>
-            <div class="user-component">
+            <div class="user-component friend-profile" data-user-id="<%= friend.user_id %>">
                 <div class="user-component__column">
                   <img
-                  src="<%= friend.profile_img_url ? friend.profile_img_url : '/images/basic_profile.jpg' %>" alt="Friend Image"
+                  src= "<%= friend.profile_img_url ? friend.profile_img_url : '/images/basic_profile.jpg' %>" alt="Friend Image"
                     class="user-component__avatar user-component__avatar--sm"
                   />
                   <div class="user-component__text">
@@ -132,7 +132,8 @@
 
       <!-- 프로필 수정 모달 -->
       <div id="profileEditModal" class="profileEditModal">
-        <div class="profileEditModal-content">
+        <div class="profileEditModal-content" style="background-image: url('<%= profile.background_img_url ? profile.background_img_url : '/images/default_background.png' %>');">
+
             <div class="profileEditModal-header">
                 <i class="fas fa-image"></i>
                 <div class="profileEditModal-header_img_choice">
@@ -142,19 +143,27 @@
                 <span class="profileEditModal-close-button">&times;</span>
             </div>
             <div class="profileEditModal-body">
-                <img src="/images/basic_profile.jpg" alt="Profile Image" class="profileEditModal-profile-img">
+                <img src="<%= profile.profile_img_url ? profile.profile_img_url : '/images/basic_profile.jpg' %>" alt="Profile Image" class="profileEditModal-profile-img">
                 <div class="profileEditModal-body_img_choice">
                     <label><p class="realImg-upload">사진 변경</p><input type="file" id="profileImageInput" accept=".bmp, .png, .jpg, .jpeg" ></label>
                     <p class="img_upload">기본 이미지로 변경</p>
                 </div>
                 <div class="profileEditModal-body_div">
-                    <p class="profileEditModal-edit-profile">프로필 편집 </p>
-                    <i class="fas fa-pen"></i>
+                    <p class="profileEditModal-edit-profile"><%= profile.name %></p>
+                    <i class="fas fa-pen edit-profile-name"></i>
                 </div>
                 <div class="profileEditModal-body_div">
-                    <p class="profileEditModal-edit-statusMessage">상태메시지</p>
-                    <i class="fas fa-pen"></i>
+                    <p class="profileEditModal-edit-statusMessage"><%= profile.status_message %></p>
+                    <i class="fas fa-pen edit-statusMessage"></i>
                 </div>
+            </div>
+            <!-- 프로필 수정 모달 -->
+            <div class="profileEditModal-body_edit">
+                <span class="profileEditModal-body_edit-close-button">&times;</span>
+                <div>
+                    <form>
+                        <input id="editProfile" maxlength="20" value="프로필이름"><span class="editProfile-counter">5/20</span><button type="submit"><i class="fas fa-check"></i></button></form>
+                    </div>
             </div>
             <div class="profileEditModal-chat">
                 <i class="fas fa-comment fa-lg"></i>
