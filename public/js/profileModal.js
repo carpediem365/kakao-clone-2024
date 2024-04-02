@@ -14,7 +14,6 @@ function initializeEventListeners() {
 // 모달 열기 함수
 function openProfileEditModal() {
     document.getElementById('profileEditModal').style.display = 'block';
-
 }
 
 // 모달 닫기 함수
@@ -37,8 +36,6 @@ window.onclick = function(event) {
     }
 
 }
-    // 프로필 이미지 클릭 시 모달 표시
-    document.getElementById('profileImg').addEventListener('click', openProfileEditModal);
 
     // 닫기 버튼 클릭 이벤트
     document.querySelector('.profileEditModal-close-button').addEventListener('click', closeProfileEditModal);
@@ -159,11 +156,63 @@ function editProfileKeyup()
     });
 }
 
+    // 프로필 이미지 클릭 시 모달 표시
+document.getElementById('profileImg').addEventListener('click', openProfileEditModal);
+// 내 프로필에 대한 이벤트 리스너
+document.querySelector('.my-profile').addEventListener('click', function() {
+        const myId = this.dataset.userId;
+        console.log(myId);
+        fetch(`/friends/${myId}`)
+        .then(response => response.json())
+            .then(friendData => {
+                console.log("friendData임:",friendData);
+                // 모달창 데이터 업데이트
+                const profileImg = friendData.profile_img_url || '/images/basic_profile.jpg';
+                document.querySelector('.profileEditModal-profile-img').src = profileImg;
+                document.querySelector('.profileEditModal-edit-profile').textContent = friendData.name;
+                document.querySelector('.profileEditModal-edit-statusMessage').textContent = friendData.status_message;
+
+                // 배경 이미지 URL 처리
+                var backgroundImageUrl = friendData.background_img_url || '/images/default_background.png';
+                document.querySelector('.profileEditModal-content').style.backgroundImage = `url(${backgroundImageUrl})`;
+
+                // 모달창 열기
+                openProfileEditModal();
+                document.querySelector('.profileEditModal_icon').style.display = 'block';
+                document.querySelector('.edit-statusMessage').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching friend data:', error);
+            });
+    });
+
+
+// 모든 친구 프로필 요소에 대해 이벤트 리스너 추가
 document.querySelectorAll('.friend-profile').forEach(function(profile) {
     profile.addEventListener('click', function() {
-        // 친구 정보 로드 및 모달창 표시 로직
-        // 현재 클릭된 프로필의 친구 ID 가져오기
-        var friendId = this.friend;
-        console.log("friendId1:",friendId);
+        var friendId = this.dataset.userId;
+        console.log(friendId)
+        fetch(`/friends/${friendId}`)
+            .then(response => response.json())
+            .then(friendData => {
+                console.log("friendData임:",friendData);
+                // 모달창 데이터 업데이트
+                const profileImg = friendData.profile_img_url || '/images/basic_profile.jpg';
+                document.querySelector('.profileEditModal-profile-img').src = profileImg;
+                document.querySelector('.profileEditModal-edit-profile').textContent = friendData.name;
+                document.querySelector('.profileEditModal-edit-statusMessage').textContent = friendData.status_message;
+
+                // 배경 이미지 URL 처리
+                var backgroundImageUrl = friendData.background_img_url || '/images/default_background.png';
+                document.querySelector('.profileEditModal-content').style.backgroundImage = `url(${backgroundImageUrl})`;
+
+                // 모달창 열기
+                openProfileEditModal();
+                document.querySelector('.profileEditModal_icon').style.display = 'none';
+                document.querySelector('.edit-statusMessage').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error fetching friend data:', error);
+            });
     });
 });

@@ -70,4 +70,11 @@ router.post('/add-friend', async (req, res) => {
   }
 });
 
+router.get('/:id' , async (req,res) => {
+  console.log("요청옴?",req.params.id)
+  const friendId = req.params.id;
+  const friendData = await User.getProfileInfo(friendId);
+  res.json(friendData)
+})
+
   module.exports = router;
