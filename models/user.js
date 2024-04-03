@@ -159,30 +159,59 @@ class User {
   }
 }
 
-// static async addFriend(userId, friendId) {
-//   try {
-//       const conn = await connect();
-//       // 친구 ID 존재 여부 확인
-//       const [friendExists] = await conn.execute('SELECT * FROM user WHERE user_id = ?', [friendId]);
-//       if (friendExists.length === 0) {
-//           throw new Error(`'${friendId}'는 존재하지 않는 ID입니다.`);
-//       }
+static async addFriend(userId, friendId) {
+  try {
+      const conn = await connect();
+      // 친구 ID 존재 여부 확인
+      const [friendExists] = await conn.execute('SELECT * FROM user WHERE user_id = ?', [friendId]);
+      if (friendExists.length === 0) {
+          throw new Error(`'${friendId}'는 존재하지 않는 ID입니다.`);
+      }
 
-//       // 이미 친구인지 여부 확인
-//       const [alreadyFriends] = await conn.execute('SELECT * FROM friend WHERE my_id = ? AND friend_id = ?', [userId, friendId]);
-//       if (alreadyFriends.length > 0) {
-//           throw new Error(`'${friendId}'는 이미 친구로 등록된 ID입니다.`);
-//       }
+      // 이미 친구인지 여부 확인
+      const [alreadyFriends] = await conn.execute('SELECT * FROM friend WHERE my_id = ? AND friend_id = ?', [userId, friendId]);
+      if (alreadyFriends.length > 0) {
+          throw new Error(`'${friendId}'는 이미 친구로 등록된 ID입니다.`);
+      }
 
-//       // 친구추가
-//       const result = await conn.execute('INSERT INTO friend (my_id, friend_id) VALUES (?, ?)', [userId, friendId]);
-//       conn.end();
-//       return result[0].affectedRows > 0;
-//   } catch (error) {
-//       console.error('친구 추가 중 에러 발생:', error);
-//       throw error;
-//   }
-// }
+     console.log("이건 뭘까요?", friendExists)
+      // 친구추가
+      const result = await conn.execute('INSERT INTO friend (my_id, friend_id,friend_name) VALUES (?, ?, ?)', [userId, friendId,friendExists[0].name]);
+      conn.end();
+      return result[0].affectedRows > 0;
+  } catch (error) {
+      console.error('친구 추가 중 에러 발생:', error);
+      throw error;
+  }
+}
+
+ // 프로필 업데이트 메서드
+ static async updateProfile(userId, updatedData) {
+  try {
+      const conn = await connect();
+      let updateQuery = 'UPDATE user SET ';
+      const queryParams = [];
+
+      // 데이터를 동적으로 처리
+      for (let [key, value] of Object.entries(updatedData)) {
+          updateQuery += `${key} = ?, `;
+          queryParams.push(value);
+      }
+      console.log("업데이트 쿼리", updateQuery)
+      let updateQuery1 = updateQuery.slice(0, -2)
+      console.log("업데이트 쿼리", updateQuery1)
+      updateQuery = updateQuery.slice(0, -2) + ' WHERE user_id = ?'; // 마지막 쉼표 제거
+      queryParams.push(userId);
+
+      const [result] = await conn.execute(updateQuery, queryParams);
+      conn.end();
+
+      return result.affectedRows > 0;
+  } catch (error) {
+      console.error('Error updating profile in User model:', error);
+      throw error;
+  }
+}
 }
 
 
