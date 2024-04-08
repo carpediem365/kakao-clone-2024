@@ -42,7 +42,7 @@
         <div class="user-component">
             <div class="user-component__column">
               <img
-              src="../image/profile.jpg"
+              src="<%= room.participant_profile_img ? room.participant_profile_img : '/images/basic_profile.jpg' %>"
                 class="user-component__avatar user-component__avatar"
               />
               <div class="user-component__text">
@@ -65,10 +65,10 @@
     <nav class="nav">
         <ul class="nav__list">
             <li class="nav__btn">
-                <a class="nav__link" href="friends.html"><i class="fa-regular  fa-user fa-2x"></i></a>
+                <a class="nav__link" href="/friends"><i class="fa-regular  fa-user fa-2x"></i></a>
             </li>
             <li class="nav__btn">
-                <a class="nav__link" href="chats.html"> 
+                <a class="nav__link" href="/chats"> 
                     <span class="nav_notification badge">1</span>
                     <i class="fa-solid fa-comment fa-2x"></i></a>
             </li>
