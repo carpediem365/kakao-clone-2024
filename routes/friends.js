@@ -86,9 +86,21 @@ router.post('/add-friend', async (req, res) => {
 
 // 프로필 수정 모달창 보여주는 라우터
 router.get('/:id' , async (req,res) => {
-  const friendId = req.params.id;
-  const friendData = await User.getProfileInfo(friendId);
-  res.json(friendData)
+  const userId = req.params.id;
+  let responseData;
+  if(userId === req.session.user.user_id){
+    responseData = await User.getProfileInfo(userId);
+  }else{
+    console.log("/id 요청",userId,req.session.user.user_id)
+    const [profileInfo, friendInfo]  = await User.getFriendProfileInfo(userId,req.session.user.user_id);
+    console.log("/id 요청friend",friendInfo)
+    console.log("/id 요청friend",profileInfo)
+    responseData = {
+      profileInfo, // 친구의 프로필 정보
+      friendName: friendInfo.friend_name // 친구 목록에서의 이름
+    };
+  }
+  res.json(responseData);
 })
 
 // 프로필 업데이트 라우트
@@ -99,9 +111,16 @@ router.post('/update-profile/:userId',async (req,res) => {
   try{
     console.log("프로필업데이트중req",req.session.user);
     console.log("프로필업데이트중req",req.session.user.user_id);
-    const result = await User.updateProfile(userId, updateData);
+    let result;
+    if(userId === req.session.user.user_id){
+      // 로그인한 사용자의 프로필 업데이트
+      result = await User.updateProfile(userId,updateData)
+    } else {
+      // 친구 프로필 업데이트
+      result = await User.updateFriendName(req.session.user.user_id, userId,updateData.name);
+    }
     if (result) {
-      res.json({ success: true , message: 'Profile updated successfully'});
+      res.json({ success: true , message: 'Profile updated successfully', userId:req.session.user.user_id });
     } else {
       res.status(400).json({ success: false, message: 'Profile update failed'});
     }
@@ -134,7 +153,7 @@ router.post('/upload-background-image', upload.single('backgroundImage'), async 
   if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
-
+  const baseUrl = config.BASE_URL;
   // 파일 경로 업데이트 로직
   const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
   try {
@@ -143,6 +162,27 @@ router.post('/upload-background-image', upload.single('backgroundImage'), async 
   } catch (error) {
       console.error('Error uploading background image:', error);
       res.status(500).json({ success: false, message: 'Error uploading image' });
+  }
+});
+
+router.post('/update-default-image',async(req,res) =>{
+  const userId = req.session.user ? req.session.user.user_id : null;
+  const { imagePath, imageType } = req.body;
+
+  if(!userId){
+    return res.status(401).send('로그인이 필요합니다.');
+  }
+
+  try{
+    const result = await User.updateDefaultImage(userId, imagePath, imageType);
+    if(result){
+      res.json({success: true, message : "Default image updated successfully"})
+    } else{
+      res.status(400).json({success: false, message:"Failed to update default image"});
+    }
+  } catch (error) {
+      console.error('Error in update-default-image route:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
 

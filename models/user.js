@@ -131,6 +131,21 @@ class User {
       throw error;
     }
   }
+// 친구 프로필 모달창 띄우는 정보 조회
+  static async getFriendProfileInfo(friendId,userId) {
+    try {
+      const conn = await connect();
+      const sql = 'SELECT user_id , name, status_message, profile_img_url,background_img_url FROM user WHERE user_id = ?';
+      const [profile] = await conn.execute(sql, [friendId]);
+      const friendSql = 'SELECT friend_name from friend where friend_id = ? AND my_id = ?'
+      const [friendProfile] = await conn.execute(friendSql, [friendId,userId]);
+      conn.end();
+      return [profile[0],friendProfile[0]];
+    } catch (error) {
+      console.error('Error fetching profile info:', error);
+      throw error;
+    }
+  }
 
   static async checkUserAndFriendship(userId, friendId) {
     try {
@@ -212,6 +227,34 @@ static async addFriend(userId, friendId) {
       throw error;
   }
 }
+
+ // 친구 이름 업데이트 메서드
+ static async updateFriendName(myId, friendId, newName) {
+  try {
+    const conn = await connect();
+    const sql = 'UPDATE friend SET friend_name = ? WHERE my_id = ? AND friend_id = ?';
+    const result = await conn.execute(sql, [newName, myId, friendId]);
+    conn.end();
+    return result[0].affectedRows > 0;
+  } catch (error) {
+    console.error('Error updating friend name:', error);
+    throw error;
+  }
+}
+
+static async updateDefaultImage(userId, imagePath, imageType){
+  try{
+    const conn = await connect();
+    let updateQuery = `UPDATE user SET ${imageType === 'profile' ? 'profile_img_url' : 'background_img_url'} = ? WHERE user_id = ?`;
+    await conn.execute(updateQuery, [imagePath, userId]);
+    conn.end();
+    return true;
+  } catch (error) {
+      console.error('Error updating default image:', error);
+      throw error;
+  }
+}
+
 }
 
 

@@ -6,7 +6,7 @@ const app = express();
 const signupRoutes = require('./routes/signup');
 const loginRoutes = require('./routes/login');
 const friendsRoutes = require('./routes/friends');
-
+const chatsRoutes = require('./routes/chats');
 // 뷰 엔진 설정
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 app.use('/signup', signupRoutes);
 app.use('/login',loginRoutes);
 app.use('/friends', friendsRoutes);
-
+app.use('/chats',chatsRoutes);
 // 서버 시작
 const port = 3000;
 app.listen(port, () => {

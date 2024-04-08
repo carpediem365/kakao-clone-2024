@@ -37,7 +37,8 @@
    
 
     <main class="main-screen">
-        <a href="chat.html">
+        <% chatRooms.forEach(room => { %>
+        <a href="chat/<%= room.id %>">
         <div class="user-component">
             <div class="user-component__column">
               <img
@@ -45,17 +46,17 @@
                 class="user-component__avatar user-component__avatar"
               />
               <div class="user-component__text">
-                <h4 class="user-component__title">김도운</h4>
-                <h6 class="user-component__subtitle">PLease check My Kakao Account Info</h6>
+                <h4 class="user-component__title"><%= room.identifier %></h4>
+                <h6 class="user-component__subtitle"><%= room.last_chat %></h6>
               </div>
             </div>
             <div class="user-component__column">
-                <span class="user-component__time">21:22</span>
-                <div class="badge">1</div>
+                <span class="user-component__time"><%= room.updated_at %></span>
+                <div class="badge"><%= room.unread_chat_count %></div>
             </div>
           </div>
         </a>
-
+        <% }); %>
     </main>
 
     

@@ -66,7 +66,6 @@ function checkUserAndShowAddButton(friendId) {
             }
             
         } else {
-            console.log("여기인가1");
             displayError(data.message);
         }
     })
@@ -153,16 +152,11 @@ function addFriend() {
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            console.log("데이터data:", data);
-            console.log("데이터data:", data.success);
             alert('친구가 추가되었습니다.');
             closeAddFriendModal();
             window.location.reload(); // 페이지 새로고침
         }else{
            // 친구 추가 실패 메시지 표시
-           console.log("modal error",data.message);
-           console.log("데이터data:", data);
-           console.log("데이터data:", data.success);
            const errorMsgElement = document.querySelector('.add-friend_error-msg');
            errorMsgElement.textContent = data.message;
         }
