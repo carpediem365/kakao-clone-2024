@@ -32,7 +32,7 @@
             </a>
         </div>
         <div class="alt-header__column">
-            <h1 class="alt-header__title">국지호</h1>
+            <h1 class="alt-header__title"><%= roomName %></h1>
         </div>
         <div class="alt-header__column">
             <span><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
@@ -41,27 +41,38 @@
     </header>
 
     <main class="main-screen main-chat">
-        <div class="chat__timestamp">
-          Tuesday, June 30, 2020
-        </div>
-        <div class="message-row">
-            <img src="../image/profile.jpg" alt="">
-            <div class="message-row__content">
-                <span class="message__author">국지호</span>
+        <% let lastDate = null; %>
+        <% messages.forEach(message => { %>
+            <% if (lastDate !== message.date) { %>
+                <div class="chat__timestamp">
+                    <%= message.date %>
+                </div>
+                <% lastDate = message.date; %>
+            <% } %>
+        <div class="message-row <%= message.senderId === currentUserId ? 'message-row--own' : '' %>">
+            <% if (message.senderId != currentUserId) { %>
+                
+                <img src="<%= message.profile_img_url ? message.profile_img_url : '/images/basic_profile.jpg' %>"alt="">
+                <div class="message-row__content">
+                    <span class="message__author"><%= message.senderName %></span>
+            <% } else { %>
+                <div class="message-row__content">
+            <% } %>
                 <div class="message__info">
-                    <span class="message__bubble"> Hi!</span>
-                    <span class="message__time">21:27</span>
+                    <span class="message__bubble"><%= message.text %></span>
+                    <span class="message__time"><%= message.time %></span>
                 </div>
             </div>
         </div>
-        <div class="message-row message-row--own">
+        <% }); %>
+        <!-- <div class="message-row message-row--own">
             <div class="message-row__content">
                 <div class="message__info">
                     <span class="message__bubble"> Hi nice to meet you!</span>
                     <span class="message__time">21:27</span>
                 </div>
             </div>
-        </div>
+        </div> -->
       </main>
 
       <form class="reply">

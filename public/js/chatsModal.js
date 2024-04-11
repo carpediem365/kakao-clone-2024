@@ -14,18 +14,11 @@ for (const btn of closeButtons) {
     };
   }
   
-  // 확인 버튼을 눌렀을 때의 이벤트 핸들러
-  document.getElementById('confirmNewChat').onclick = function() {
-    const selectedRadio = document.querySelector('input[name="friend"]:checked');
-    if (selectedRadio) {
-      const selectedFriendId = selectedRadio.value;
-      console.log("선택된 친구",selected);
-      console.log("선택된 친구1",selectedRadio);
-      // 나머지 코드...
-    } else {
-      alert('친구를 선택해주세요.');
-    }
-  
+// 채팅방 생성 및 이동
+document.getElementById('confirmNewChat').onclick = function() {
+  const selectedRadio = document.querySelector('input[name="friend"]:checked');
+  if (selectedRadio) {
+    const selectedFriendId = selectedRadio.value;
     fetch('/chats/create-chat', {
       method: 'POST',
       headers: {
@@ -34,10 +27,16 @@ for (const btn of closeButtons) {
       body: JSON.stringify({ friendId: selectedFriendId })
     })
     .then(response => response.json())
-    .then(chatRoom => {
-      window.location.href = `/chat/${chatRoom.id}`;
+    .then(data => {
+      if(data.id) {
+        window.location.href = `/chat/${data.id}`;
+      } else {
+        console.error('채팅방 생성에 실패했습니다.');
+      }
     })
     .catch(error => console.error('Error:', error));
-  
-    newChatModal.style.display = 'none';
-  };
+  } else {
+    alert('친구를 선택해주세요.');
+  }
+  newChatModal.style.display = 'none';
+};

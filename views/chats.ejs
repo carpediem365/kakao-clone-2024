@@ -47,13 +47,15 @@
                 class="user-component__avatar user-component__avatar"
               />
               <div class="user-component__text">
-                <h4 class="user-component__title"><%= room.identifier %></h4>
+                <h4 class="user-component__title"><%= room.room_name %></h4>
                 <h6 class="user-component__subtitle"><%= room.last_chat %></h6>
               </div>
             </div>
             <div class="user-component__column">
                 <span class="user-component__time"><%= room.updated_at %></span>
-                <div class="badge"><%= room.unread_chat_count %></div>
+                <% if (room.unread_chat_count && room.unread_chat_count > 0) { %>
+                    <div class="badge"><%= room.unread_chat_count %></div>
+                <% } %>
             </div>
           </div>
         </a>
