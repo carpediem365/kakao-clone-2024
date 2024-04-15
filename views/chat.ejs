@@ -27,7 +27,7 @@
 
     <header class="alt-header">
         <div class="alt-header__column">
-            <a href="chats.html">
+            <a href="/chats">
             <i class="fa-solid fa-angle-left fa-2x"></i>
             </a>
         </div>
@@ -52,9 +52,9 @@
         <div class="message-row <%= message.senderId === currentUserId ? 'message-row--own' : '' %>">
             <% if (message.senderId != currentUserId) { %>
                 
-                <img src="<%= message.profile_img_url ? message.profile_img_url : '/images/basic_profile.jpg' %>"alt="">
+                <img src="<%= message.sender.profileImgUrl ?  message.sender.profileImgUrl : '/images/basic_profile.jpg' %>"alt="">
                 <div class="message-row__content">
-                    <span class="message__author"><%= message.senderName %></span>
+                    <span class="message__author"><%= message.sender.name %></span>
             <% } else { %>
                 <div class="message-row__content">
             <% } %>

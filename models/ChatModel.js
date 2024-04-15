@@ -145,7 +145,7 @@ class ChatModel {
         const friendNamesSql = `
             SELECT 
             f.friend_id, 
-            u.name AS friend_name, 
+            f.friend_name  AS friend_name, 
             u.profile_img_url
         FROM 
             friend AS f
@@ -165,7 +165,6 @@ class ChatModel {
             return acc;
         }, {});
         console.log("채팅메시지임friendNameMap1",friendNameMap)
-    
         console.log("채팅메시지임friendNameMap2",friendNames.profile_img_url)
         console.log("채팅메시지임friendNameMap3",friendNames[0].profile_img_url)
         // 메시지와 친구 이름 매핑
@@ -180,10 +179,12 @@ class ChatModel {
                 text: message.message,
                 date: dateFormatted,
                 time: timeFormatted,
-                friendName: friendNameMap[message.sender_id] || message.sender_name,
-                profile_img_url: friendNames[0].profile_img_url
+                sender: friendNameMap[message.sender_id] || message.sender_name,
+                // 현재 문제점이 일단 undefiend가 나와서 user.name을 가져와서 이름반영안되고 사진 반영도 안됨
             };
         });
+        
+    
         console.log("채팅메시지임",mappedMessages)
         conn.end();
         return mappedMessages
