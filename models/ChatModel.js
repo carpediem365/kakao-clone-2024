@@ -135,6 +135,9 @@ class ChatModel {
         `;
             const [messages] = await conn.execute(sql, [roomId]);
 
+            if (messages.length === 0) {
+                return [];
+            }
             // 메시지 보낸 사람의 친구 이름 조회
         const senderIds = messages.map(message => message.sender_id);
         const senderIdsFormatted = senderIds.map(id => `'${id}'`).join(', ');
@@ -165,7 +168,6 @@ class ChatModel {
             return acc;
         }, {});
         console.log("채팅메시지임friendNameMap1",friendNameMap)
-        console.log("채팅메시지임friendNameMap2",friendNames.profile_img_url)
         console.log("채팅메시지임friendNameMap3",friendNames[0].profile_img_url)
         // 메시지와 친구 이름 매핑
         const mappedMessages = messages.map(message => {
@@ -191,6 +193,36 @@ class ChatModel {
         }catch (error) {
             console.error('Error in getChatMessages', error);
             throw error;
+        }
+    }
+
+    // 채팅방 참가자 정보 조회
+    static async getRoomParticipants(userId,roomId) {
+        const conn = await connect();
+        try {
+            const sql = `
+            SELECT 
+            u.user_id, 
+            u.name, 
+            u.profile_img_url, 
+            f.friend_name
+        FROM 
+            participant AS p
+        JOIN 
+            user AS u ON p.user_id = u.user_id
+        LEFT JOIN 
+            friend AS f ON f.friend_id = u.user_id AND f.my_id = ?  -- 현재 로그인한 사용자의 ID를 바인딩
+        WHERE 
+            p.room_id = ?;  -- 채팅방 ID를 바인딩
+        
+            `;
+            const [participants] = await conn.execute(sql, [userId,roomId]);
+            return participants; // 참가자 목록 반환
+        } catch (error) {
+            console.error('Error in getRoomParticipants', error);
+            throw error;
+        } finally {
+            await conn.end(); // 데이터베이스 연결 종료
         }
     }
 }

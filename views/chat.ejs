@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat w / Nico - Kokoa Talk</title>
 </head>
-<body id="chat-screen">
+<body id="chat-screen" data-user-id="<%= userId %>" data-room-id="<%= roomId %>">
+    <div style="display:none;">
+        <% participants.forEach(participant => { %>
+            <div class="participant-info" 
+                 data-user-id="<%= participant.user_id %>"
+                 data-name="<%= participant.name %>"
+                 data-profile-img-url="<%= participant.profile_img_url %>"
+                 data-friend-name="<%= participant.friend_name %>">
+            </div>
+        <% }); %>
+    </div>
     <div class="status-bar">
         <div class="status-bar__column">
             <span>No service</span>
@@ -49,10 +59,10 @@
                 </div>
                 <% lastDate = message.date; %>
             <% } %>
-        <div class="message-row <%= message.senderId === currentUserId ? 'message-row--own' : '' %>">
+        <div class="<%= message.senderId === currentUserId ? 'message-row--own' : 'message-row' %>">
             <% if (message.senderId != currentUserId) { %>
                 
-                <img src="<%= message.sender.profileImgUrl ?  message.sender.profileImgUrl : '/images/basic_profile.jpg' %>"alt="">
+                <img id="chat-image" src="<%= message.sender.profileImgUrl ?  message.sender.profileImgUrl : '/images/basic_profile.jpg' %>"alt="">
                 <div class="message-row__content">
                     <span class="message__author"><%= message.sender.name %></span>
             <% } else { %>
@@ -80,7 +90,7 @@
             <i class="fa-regular fa-square-plus fa-lg"></i>
         </div>
         <div class="reply__column">
-            <input type="text" placeholder="Write a message..."/>
+            <input id="message-input" type="text" placeholder="Write a message..."/>
             <i class="fa-regular fa-face-smile fa-lg"></i>
             <button>
                 <i class="fa-solid fa-arrow-up"></i>
@@ -93,5 +103,8 @@
     </div>
     
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/socketio.js"></script>
+    
 </body>
 </html>

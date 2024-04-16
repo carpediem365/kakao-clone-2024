@@ -24,4 +24,5 @@ function formatChatTime(updatedAt) {
     return formattedTime;
 }
 
+
 module.exports = formatChatTime;
