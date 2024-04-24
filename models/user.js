@@ -230,15 +230,40 @@ static async addFriend(userId, friendId) {
 
  // 친구 이름 업데이트 메서드
  static async updateFriendName(myId, friendId, newName) {
+  const conn = await connect();
   try {
-    const conn = await connect();
+    await conn.beginTransaction();
+
+     // 친구 이름 업데이트
     const sql = 'UPDATE friend SET friend_name = ? WHERE my_id = ? AND friend_id = ?';
     const result = await conn.execute(sql, [newName, myId, friendId]);
-    conn.end();
-    return result[0].affectedRows > 0;
+
+     // 공통 채팅방 찾기 및 이름 업데이트
+     const sqlFindRooms = `
+     SELECT room_id FROM participant
+     WHERE user_id IN (?, ?)
+     GROUP BY room_id
+     HAVING COUNT(DISTINCT user_id) = 2;`;
+
+   const [rooms] = await conn.execute(sqlFindRooms, [myId, friendId]);
+
+    // 각 채팅방의 이름을 업데이트하기 전에 결과가 있는지 확인
+    if (rooms.length > 0) {
+      for (const room of rooms) {
+        const sqlUpdateRoom = 'UPDATE participant SET room_name = ? WHERE room_id = ? AND user_id = ?';
+        await conn.execute(sqlUpdateRoom, [newName, room.room_id, myId]);
+      }
+    } else {
+      console.log("No common chat rooms to update.");
+    }
+    await conn.commit();
+    return true;
   } catch (error) {
-    console.error('Error updating friend name:', error);
+    await conn.rollback();
+    console.error('Error updating friend and room name:', error);
     throw error;
+  } finally {
+    await conn.end();
   }
 }
 

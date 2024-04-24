@@ -40,3 +40,40 @@ document.getElementById('confirmNewChat').onclick = function() {
   }
   newChatModal.style.display = 'none';
 };
+
+document.getElementById('searchUser').addEventListener('input', searchFriend);
+
+function searchFriend() {
+  let input = document.getElementById('searchUser');
+  let filter = input.value.toLowerCase();
+  if (filter === '') {
+    filter = 'ALL_FRIENDS';  // 입력값이 비어있을 경우, 'ALL_FRIENDS'라는 값 전송
+  }
+  console.log("Sending query:", filter);
+  fetch(`/chats/search?query=${filter}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("친구정보입니다 data",data);
+          displayFriends(data.friendsList, data.totalFriends);
+      })
+      .catch(error => console.error('Error:', error));
+}
+
+function displayFriends(friends,totalFriends) {
+  let friendsList = document.querySelector('.newChatModal_form ul');
+  let friendsCounterElement = document.querySelector('.newChatModal_section h6');
+  friendsList.innerHTML = '';  // 기존 목록을 비웁니다.
+
+  friends.forEach(friend => {
+      friendsList.innerHTML += `
+          <label>
+              <li>
+                  <img src="${friend.profile_img_url}" alt="profile Image">
+                  <p>${friend.friend_name}</p>
+                  <input type="radio" name="friend" value="${friend.friend_id}">
+              </li>
+          </label>
+      `;
+  });
+  friendsCounterElement.textContent = `친구 ${totalFriends}`;
+}

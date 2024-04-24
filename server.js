@@ -5,6 +5,7 @@ const path = require('path');
 const app = express();
 const http = require('http');
 const socketIo = require('socket.io');
+const ChatModel = require('./models/ChatModel');
 
 const signupRoutes = require('./routes/signup');
 const loginRoutes = require('./routes/login');
@@ -29,23 +30,54 @@ app.use(session({
 
 const server = http.createServer(app);
 const io = socketIo(server);
+app.set('io', io);
 
 io.on('connection', (socket) => {
   console.log('New client connected');
 
   socket.on('joinRoom', (data) => {
-    console.log(`User joined room with ID: ${data.roomId} and User ID: ${data.userId}`);
-    socket.join(data.roomId);
+    try {
+      socket.join(data.currentRoomId);
+      console.log(`User joined room with ID: ${data.currentRoomId} and User ID: ${data.currentUserId}`);
+      console.log(`Room ${data.currentRoomId} now has ${Array.from(io.sockets.adapter.rooms.get(data.currentRoomId) || []).length} clients`);
+  } catch (error) {
+      console.error('Error joinRoom:', error);
+  }
   });
 
   socket.on('chatMessage', (data) => {
+    console.log("chatMessage로 신호는 옴",data);
     console.log("chatMessage",JSON.stringify(data));
-    io.to(data.roomId).emit('message', {userId: data.userId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName });
+    io.to(data.currentRoomId).emit('message', {roomId: data.currentRoomId, userId: data.userId, message: data.message, messageId: data.messageId, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unreadCount: data.unreadCount});
+    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unread_chat_count: data.unread_chat_count});
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
+  // 메시지 읽음 처리
+  socket.on('messageReadCount', async ({ messageId, roomId, currentUserId }) => {
+    console.log("읽음처리 실행 server.js messageReadCounts")
+    try {
+        const result = await ChatModel.messageReadCount(currentUserId, roomId, messageId);
+        console.log("읽음처리 실행 server.js",result)
+        const unread_Count = result.unreadCount
+        if (result.affectedRows > 0) {
+          console.log("읽음처리 실행 server.js 여기까진ok",messageId, currentUserId , unread_Count,roomId)
+          try{
+            console.log(`Emitting to ${Array.from(io.sockets.adapter.rooms.get(roomId) || []).length} clients in room ${roomId}.`);
+            io.to(roomId).emit('messageRead', { messageId, currentUserId , unread_Count });
+            console.log("읽음처리 실행 server.js 굿");
+          }catch(e){
+            console.error("Error updating read status:", error);
+          }
+            
+        }
+    } catch (error) {
+        console.error("Error updating read status:", error);
+    }
+});
+
+socket.on('disconnect', () => {
+  console.log('Client disconnected');
+});
 });
 
 

@@ -7,16 +7,6 @@
     <title>Chat w / Nico - Kokoa Talk</title>
 </head>
 <body id="chat-screen" data-user-id="<%= userId %>" data-room-id="<%= roomId %>">
-    <div style="display:none;">
-        <% participants.forEach(participant => { %>
-            <div class="participant-info" 
-                 data-user-id="<%= participant.user_id %>"
-                 data-name="<%= participant.name %>"
-                 data-profile-img-url="<%= participant.profile_img_url %>"
-                 data-friend-name="<%= participant.friend_name %>">
-            </div>
-        <% }); %>
-    </div>
     <div class="status-bar">
         <div class="status-bar__column">
             <span>No service</span>
@@ -64,13 +54,16 @@
                 
                 <img id="chat-image" src="<%= message.sender.profileImgUrl ?  message.sender.profileImgUrl : '/images/basic_profile.jpg' %>"alt="">
                 <div class="message-row__content">
-                    <span class="message__author"><%= message.sender.name %></span>
+                    <span class="message__author"><%= message.sender.name ? message.sender.name : message.senderName %></span>
             <% } else { %>
                 <div class="message-row__content">
             <% } %>
                 <div class="message__info">
                     <span class="message__bubble"><%= message.text %></span>
                     <span class="message__time"><%= message.time %></span>
+                    <% if (unreadCount > 0) { %>
+                    <span class="unread-count-<%= messageId %>"><%= unreadCount %></span>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -85,14 +78,14 @@
         </div> -->
       </main>
 
-      <form class="reply">
+      <form class="reply" id="message-form">
         <div class="reply__column">
             <i class="fa-regular fa-square-plus fa-lg"></i>
         </div>
         <div class="reply__column">
-            <input id="message-input" type="text" placeholder="Write a message..."/>
+            <input id="message-input" type="text" placeholder="Write a message..."/ >
             <i class="fa-regular fa-face-smile fa-lg"></i>
-            <button>
+            <button type="submit">
                 <i class="fa-solid fa-arrow-up"></i>
             </button>
         </div>

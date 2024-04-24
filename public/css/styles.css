@@ -25,7 +25,7 @@
 body{
     color: #2e363e;
     font-family: "Open Sans", sans-serif;
-    height: 1000vh;
+    /* height: 1000vh; */
 }
 /* style.css 파일에는 font-family와 같이 모든 스크린에 적용될 수 있는 스타일을 써놓는게 니코쌤 스타일 */
 

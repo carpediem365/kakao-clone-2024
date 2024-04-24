@@ -39,8 +39,8 @@
     <main class="main-screen">
         <% chatRooms.forEach(room => { %>
             <% const otherParticipant = room.participants.find(participant => participant.user_id !== currentUserId); %>
-        <a href="chat/<%= room.id %>">
-        <div class="user-component">
+        <a href="chat/<%= room.id %>" id="room-<%= room.id %>">
+        <div id="chatsPart" class="user-component">
             <div class="user-component__column">
               <img
               src="<%= otherParticipant && otherParticipant.profile_img_url ? otherParticipant.profile_img_url : '/images/basic_profile.jpg' %>"
@@ -54,7 +54,9 @@
             <div class="user-component__column">
                 <span class="user-component__time"><%= room.updated_at %></span>
                 <% if (room.unread_chat_count && room.unread_chat_count > 0) { %>
-                    <div class="badge"><%= room.unread_chat_count %></div>
+                <div class="badge"><%= room.unread_chat_count %></div>
+                <% }  else { %>
+                    <div class="badge" style="visibility: hidden;"></div>
                 <% } %>
             </div>
           </div>
@@ -121,6 +123,8 @@
       </div>
     
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/chatsSocketio.js"></script>
     <script src="/js/chatsModal.js"></script>
 </body>
 </html>
