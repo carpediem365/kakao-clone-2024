@@ -13,7 +13,10 @@ class ChatModel {
                 WHERE p.user_id = ?;
             `;
             const [chatRooms] = await conn.execute(chatRoomSql, [userId]);
-
+            let totalUnread = 0;
+            chatRooms.forEach(room => {
+                totalUnread += room.unread_chat_count;
+            })
             // 각 채팅방에 대해 다른 참여자들의 정보를 가져옵니다.
             for (let room of chatRooms) {
                 const participantSql = `
@@ -29,7 +32,7 @@ class ChatModel {
                 console.log("챗룸1",room);
             }
             console.log("챗룸",chatRooms);
-            return chatRooms;
+            return {chatRooms,totalUnread};
         } catch (error) {
             console.error('Error in getUserChatRooms', error);
             throw error;
@@ -198,6 +201,7 @@ class ChatModel {
             const timeFormatted = new Intl.DateTimeFormat('ko-KR', { timeStyle: 'short' }).format(createdAt);
             
             return {
+                messageId: message.id,
                 senderId: message.sender_id,
                 senderName: message.sender_name,
                 text: message.message,
@@ -362,7 +366,26 @@ class ChatModel {
         }
     }
 
-
+    static async calculateUnreadMessages(userId) {
+        const conn = await connect();
+        try {
+            const sql = `
+            SELECT sum(unread_chat_count) AS unreadCount
+            FROM participant
+            WHERE user_id = ?;
+            `;
+            const [results] = await conn.execute(sql, [userId]);
+            conn.end();
+            return results[0].unreadCount;
+        } catch (error) {
+            console.error('Error calculating unread messages:', error);
+            throw error;
+        } finally {
+            if (conn) {
+                conn.end();
+            }
+        }
+    }
 }
 
 

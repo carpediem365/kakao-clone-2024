@@ -1,4 +1,5 @@
 const express = require('express');
+const ChatModel = require('../models/ChatModel');
 const User = require('../models/user');
 const multer = require('multer');
 const path = require('path');
@@ -27,12 +28,13 @@ router.get('/', async (req, res) => {
     // 친구 목록 및 프로필 정보 조회
     const friendsList = await User.getFriendsList(loggedInUser.user_id);
     const profileInfo = await User.getProfileInfo(loggedInUser.user_id);
+    const {totalUnread} = await ChatModel.getUserChatRooms(loggedInUser.user_id);
     console.log("profileInfo: ", profileInfo)
     console.log("친구정보입니다.",friendsList);
     res.render('friends', {
-      user: profileInfo,
       profile: profileInfo, // 프로필 정보
-      friends: friendsList // 친구 목록 전달
+      friends: friendsList, // 친구 목록 전달
+      totalUnread : totalUnread
     });
   } catch (error) {
     console.error('Error in friends route:', error);

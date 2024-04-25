@@ -7,12 +7,12 @@ router.get('/', async (req, res) => {
     try {
         const userId = req.session.user.user_id;
         const friends = await User.getFriendsList(userId);
-        const chatRooms = await ChatModel.getUserChatRooms(userId);
+        const {chatRooms,totalUnread} = await ChatModel.getUserChatRooms(userId);
         console.log("chatjs: ", userId);
         console.log("chatRooms: ", chatRooms);
         console.log("chatRooms: ", chatRooms[0].participants);
         console.log("친구정보: ", friends);
-        res.render('chats', {chatRooms: chatRooms, currentUserId : userId, friends:friends});
+        res.render('chats', {chatRooms: chatRooms, currentUserId : userId, friends:friends, totalUnread:totalUnread});
         // 채팅 데이터를 불러오는 로직 구현
         // 예: const chats = await ChatModel.getChats();
         // res.render('chatPage', { chats: chats });

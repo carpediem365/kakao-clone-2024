@@ -54,9 +54,9 @@
             <div class="user-component__column">
                 <span class="user-component__time"><%= room.updated_at %></span>
                 <% if (room.unread_chat_count && room.unread_chat_count > 0) { %>
-                <div class="badge"><%= room.unread_chat_count %></div>
+                <div class="unread_chat_count badge"><%= room.unread_chat_count %></div>
                 <% }  else { %>
-                    <div class="badge" style="visibility: hidden;"></div>
+                    <div class="unread_chat_count badge" style="visibility: hidden;"></div>
                 <% } %>
             </div>
           </div>
@@ -74,7 +74,7 @@
             </li>
             <li class="nav__btn">
                 <a class="nav__link" href="/chats"> 
-                    <span class="nav_notification badge">1</span>
+                    <span class="nav_notification badge" style="<%= totalUnread > 0 ? '' : 'visibility: hidden;' %>"><%= totalUnread %></span>
                     <i class="fa-solid fa-comment fa-2x"></i></a>
             </li>
             <li class="nav__btn">

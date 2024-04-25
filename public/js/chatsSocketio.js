@@ -29,7 +29,8 @@ function formatChatTime(updatedAt) {
 
 socket.on('updateChatsRoom', (updatedRoom) => {
     const roomElement = document.querySelector(`#room-${updatedRoom.roomId}`);
-    if (!roomElement) {
+    const totalUnreadCountElement = document.querySelector('.nav_notification');
+    if (!roomElement && !totalUnreadCountElement) {
       console.log("No room element found for ID:", updatedRoom.roomId);
       return;
     }
@@ -39,7 +40,7 @@ socket.on('updateChatsRoom', (updatedRoom) => {
     roomElement.querySelector('.user-component__subtitle').textContent = updatedRoom.message;
     const time = roomElement.querySelector('.user-component__time').textContent = formattedTime;
     console.log("Room element time:",time)
-    const unreadCountBadge = roomElement.querySelector('.badge');
+    const unreadCountBadge = roomElement.querySelector('.unread_chat_count');
     console.log("Room element badge:",unreadCountBadge)
     if (!unreadCountBadge) {
         console.log("No badge element found for room ID:", updatedRoom.roomId);
@@ -49,4 +50,22 @@ socket.on('updateChatsRoom', (updatedRoom) => {
       } else {
         unreadCountBadge.style.visibility = 'hidden';
       }
+
+      
+    // 전체 읽지 않은 메시지 수 업데이트
+    let totalUnreadCount = Array.from(document.querySelectorAll('.unread_chat_count'))
+    .filter(unread_chat_count => unread_chat_count.style.visibility !== 'hidden')
+    .reduce((acc, unread_chat_count) => acc + parseInt(unread_chat_count.textContent, 10) || 0, 0);
+    localStorage.setItem('totalUnread', totalUnreadCount);
+    
+    console.log("읽지않은 메시지수",totalUnreadCount)
+    if (totalUnreadCount > 0) {
+        console.log("읽지않은 메시지수1",totalUnreadCount)
+        totalUnreadCountElement.textContent = totalUnreadCount;
+        totalUnreadCountElement.style.visibility = 'visible';
+    } else {
+        totalUnreadCountElement.style.visibility = 'hidden';
+    }
+    console.log("읽지않은 currentUserId",updatedRoom.receiverId,totalUnreadCount);
+    socket.emit('requestUnreadUpdate', { receiverId: updatedRoom.receiverId, count: totalUnreadCount });
   });

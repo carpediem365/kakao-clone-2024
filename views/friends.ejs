@@ -89,7 +89,7 @@
             </li>
             <li class="nav__btn">
                 <a class="nav__link" href="/chats"> 
-                    <span class="nav_notification badge">1</span>
+                    <span class="nav_notification badge" style="<%= totalUnread > 0 ? '' : 'visibility: hidden;' %>"><%= totalUnread %></span>
                     <i class="fa-regular fa-comment fa-2x"></i></a>
             </li>
             <li class="nav__btn">
@@ -175,8 +175,9 @@
 
       
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/modal.js"></script>
     <script src="/js/profileModal.js"></script>
-    <!-- font awesome code kit -->
+    <script src="/js/friends.js"></script><!-- font awesome code kit -->
 </body>
 </html>

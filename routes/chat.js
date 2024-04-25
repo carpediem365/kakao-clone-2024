@@ -56,6 +56,7 @@ router.post('/send-message/:roomId', async (req,res)=> {
         const LatestMessageId = await ChatModel.saveChatMessage(roomId, userId, message);
         const participants = await ChatModel.getRoomParticipants(userId,roomId);
         const lastMessageId = await ChatModel.getLatestMessageId(roomId);
+        
         console.log("chat.js lastMessageId",lastMessageId)
         console.log("chat.js lastMessageId",lastMessageId.id)
         console.log("chat,js participants:", participants);
@@ -64,6 +65,8 @@ router.post('/send-message/:roomId', async (req,res)=> {
 
          // 친구(다른 참가자) 정보 찾기
          const friendInfo = participants.find(participant => participant.user_id !== userId);
+
+         const totalUnreadCount = await ChatModel.calculateUnreadMessages(friendInfo.user_id);
          if (friendInfo) {
             // 친구가 설정한 이름 가져오기
             const senderName = await ChatModel.getFriendNameByUserId(userId, friendInfo.user_id);
@@ -73,13 +76,15 @@ router.post('/send-message/:roomId', async (req,res)=> {
         const combinedInfo = {
             roomId: roomId,
             userId: specificUserInfo.user_id,
+            receiverId : friendInfo.user_id,
             name: specificUserInfo.name,
             profileImgUrl: specificUserInfo.profile_img_url,
             senderName: senderName[0].senderName || specificUserInfo.name,
             message : message,
             messageId : lastMessageId.id,
             unreadCount : lastMessageId.unread_count,
-            unread_chat_count : friendInfo.unread_chat_count
+            unread_chat_count : friendInfo.unread_chat_count,
+            totalUnreadCount : totalUnreadCount
         };
         console.log("chat.js 필요한정보조합:",combinedInfo)
    

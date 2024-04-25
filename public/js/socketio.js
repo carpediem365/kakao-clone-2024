@@ -4,7 +4,7 @@ const currentUserId = chatScreen.getAttribute('data-user-id');
 const currentRoomId = chatScreen.getAttribute('data-room-id');
 // const senderName = document.querySelector(".message__author").textContent;
 socket.emit('joinRoom', { currentRoomId, currentUserId });
-
+// socket.emit('setup',{currentUserId})
 // 스크롤을 맨 아래로 내리는 함수 정의
 function scrollToBottom() {
     const messageContainer = document.querySelector('main.main-chat');
@@ -45,7 +45,8 @@ const messageForm = document.getElementById('message-form');
                     const result = await response.json();
                     console.log('Message sent successfully2:', result);
                     messageInput.value = ''; // 메시지 전송 후 입력 필드 초기화
-                    socket.emit('chatMessage', { currentRoomId, userId:result.data.userId, message:result.data.message, messageId: result.data.messageId, profileImgUrl:result.data.profileImgUrl ,senderName: result.data.senderName, unreadCount: result.data.unreadCount, unread_chat_count: result.data.unread_chat_count});
+                    socket.emit('chatMessage', { currentRoomId, userId:result.data.userId, receiverId:result.data.receiverId, message:result.data.message, messageId: result.data.messageId, profileImgUrl:result.data.profileImgUrl ,senderName: result.data.senderName, unreadCount: result.data.unreadCount, unread_chat_count: result.data.unread_chat_count});
+                    socket.emit('requestUnreadUpdate', { receiverId:result.data.receiverId, totalUnreadCount: result.data.totalUnreadCount });
                     scrollToBottom();
                   
                 } else {
@@ -93,6 +94,7 @@ socket.on('message', ({ roomId, userId, message,messageId,time,profileImgUrl,sen
     const unreadCountDisplay = unreadCount > 0 ? `<span class="unread-count-${messageId}">${unreadCount}</span>` : '';
     if (isOwnMessage) {
         messageElement.classList.add('message-row--own');
+        messageElement.setAttribute('data-message-id', messageId);
         messageElement.innerHTML = `
             <div class="message-row__content">
                 <div class="message__info">
@@ -105,6 +107,7 @@ socket.on('message', ({ roomId, userId, message,messageId,time,profileImgUrl,sen
     } else {
         const senderImageUrl = profileImgUrl || '/images/basic_profile.jpg';
         messageElement.classList.add('message-row');
+        messageElement.setAttribute('data-message-id', messageId);
         messageElement.innerHTML = `
         <img src="${senderImageUrl}" alt="">
         <div class="message-row__content">
@@ -124,13 +127,34 @@ socket.on('message', ({ roomId, userId, message,messageId,time,profileImgUrl,sen
 
 socket.on('messageRead', ({messageId,currentUserId,unread_Count}) => {
     console.log("messageRead 신호")
-    const unreadCountElement = document.querySelector(`.unread-count-${messageId}`);
-    console.log("읽음처리 실행messageRead :",unreadCountElement,messageId,currentUserId,unread_Count )
-    if (unreadCountElement) {
-        if (+unread_Count === 0) {
-            unreadCountElement.classList.add('read'); // 읽음 표시를 숨김
-        } else {
-            unreadCountElement.textContent = unread_Count; // 업데이트된 읽지 않은 메시지 수
+    const messageElements = document.querySelectorAll('.message-row, .message-row--own');
+    messageElements.forEach(element => {
+        console.log("messageRead1",element)
+        const messageIds = parseInt(element.getAttribute('data-message-id'), 10); // 각 메시지 요소에서 messageId를 추출
+        if (messageIds <= messageId) {
+            console.log("messageRead1",messageIds)
+            console.log("messageRead1",messageId)
+            const unreadCountBadge = element.querySelector('.unread-count-' + messageIds);
+            if (unreadCountBadge) {
+                if (+unread_Count === 0) {
+                    unreadCountBadge.classList.add('read'); // 읽음 표시를 숨김
+                } else {
+                    unreadCountBadge.textContent = unread_Count; // 업데이트된 읽지 않은 메시지 수
+                }
+            }
         }
-    }
+    })
 });
+
+// socket.on('messageRead', ({messageId,currentUserId,unread_Count}) => {
+//     console.log("messageRead 신호")
+//     const unreadCountElement = document.querySelector(`.unread-count-${messageId}`);
+//     console.log("읽음처리 실행messageRead :",unreadCountElement,messageId,currentUserId,unread_Count )
+//     if (unreadCountElement) {
+//         if (+unread_Count === 0) {
+//             unreadCountElement.classList.add('read'); // 읽음 표시를 숨김
+//         } else {
+//             unreadCountElement.textContent = unread_Count; // 업데이트된 읽지 않은 메시지 수
+//         }
+//     }
+// })

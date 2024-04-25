@@ -45,16 +45,26 @@ io.on('connection', (socket) => {
   }
   });
 
+  socket.on('setup', (data) => {
+    try{
+      socket.join(data.currentUserId);
+      console.log(`User ID: ${data.currentUserId}`)
+    }catch(error) {
+      console.error('Error setup:', error);
+    }
+    
+  })
+
   socket.on('chatMessage', (data) => {
     console.log("chatMessage로 신호는 옴",data);
     console.log("chatMessage",JSON.stringify(data));
     io.to(data.currentRoomId).emit('message', {roomId: data.currentRoomId, userId: data.userId, message: data.message, messageId: data.messageId, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unreadCount: data.unreadCount});
-    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unread_chat_count: data.unread_chat_count});
+    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, receiverId: data.receiverId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unread_chat_count: data.unread_chat_count});
   });
 
   // 메시지 읽음 처리
   socket.on('messageReadCount', async ({ messageId, roomId, currentUserId }) => {
-    console.log("읽음처리 실행 server.js messageReadCounts")
+    console.log("읽음처리 실행 server.js messageReadCounts",messageId,roomId, currentUserId)
     try {
         const result = await ChatModel.messageReadCount(currentUserId, roomId, messageId);
         console.log("읽음처리 실행 server.js",result)
@@ -73,6 +83,11 @@ io.on('connection', (socket) => {
     } catch (error) {
         console.error("Error updating read status:", error);
     }
+});
+
+socket.on('requestUnreadUpdate', data => {
+  console.log("requestUnreadUpdate 받음",data,data.receiverId,data.totalUnreadCount)
+  io.to(data.receiverId).emit('updateTotalUnread', data.totalUnreadCount);
 });
 
 socket.on('disconnect', () => {
