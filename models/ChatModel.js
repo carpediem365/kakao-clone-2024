@@ -296,6 +296,7 @@ class ChatModel {
         }
     }
 
+    // 채팅방 읽음 숫자 0
     static async markMessagesAsRead(userId, roomId, lastMessageId) {
         const conn = await connect();
         try {

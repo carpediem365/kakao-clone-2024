@@ -69,3 +69,36 @@ socket.on('updateChatsRoom', (updatedRoom) => {
     console.log("읽지않은 currentUserId",updatedRoom.receiverId,totalUnreadCount);
     socket.emit('requestUnreadUpdate', { receiverId: updatedRoom.receiverId, count: totalUnreadCount });
   });
+
+  socket.on('chatRoomRead'), ({roomId, unread_Count,totalUnreadCount}) => {
+    const roomElement = document.querySelector(`#room-${roomId}`);
+    const totalUnreadCountElement = document.querySelector('.nav_notification');
+    if (!roomElement && !totalUnreadCountElement) {
+      console.log("No room element found for ID:", roomId);
+      return;
+    }
+    console.log("Room element",roomElement,unread_Count)
+    const unreadCountBadge = roomElement.querySelector('.unread_chat_count');
+    console.log("Room element badge:",unreadCountBadge)
+    if (!unreadCountBadge) {
+        console.log("No badge element found for room ID:", roomId);
+      } else if (unread_Count > 0) {
+        unreadCountBadge.textContent = unread_Count;
+        unreadCountBadge.style.visibility = 'visible';
+      } else {
+        unreadCountBadge.style.visibility = 'hidden';
+      }
+
+      
+    // 전체 읽지 않은 메시지 수 업데이트
+    console.log("읽지않은 메시지수",totalUnreadCount)
+    if (totalUnreadCount > 0) {
+        console.log("읽지않은 메시지수1",totalUnreadCount)
+        totalUnreadCountElement.textContent = totalUnreadCount;
+        totalUnreadCountElement.style.visibility = 'visible';
+    } else {
+        totalUnreadCountElement.style.visibility = 'hidden';
+    }
+    // console.log("읽지않은 currentUserId",updatedRoom.receiverId,totalUnreadCount);
+    // socket.emit('requestUnreadUpdate', { receiverId: updatedRoom.receiverId, count: totalUnreadCount });
+  }

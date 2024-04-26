@@ -45,7 +45,7 @@ const messageForm = document.getElementById('message-form');
                     const result = await response.json();
                     console.log('Message sent successfully2:', result);
                     messageInput.value = ''; // 메시지 전송 후 입력 필드 초기화
-                    socket.emit('chatMessage', { currentRoomId, userId:result.data.userId, receiverId:result.data.receiverId, message:result.data.message, messageId: result.data.messageId, profileImgUrl:result.data.profileImgUrl ,senderName: result.data.senderName, unreadCount: result.data.unreadCount, unread_chat_count: result.data.unread_chat_count});
+                    socket.emit('chatMessage', { currentRoomId, userId:result.data.userId, message:result.data.message, messageId: result.data.messageId, profileImgUrl:result.data.profileImgUrl ,senderName: result.data.senderName, unreadCount: result.data.unreadCount, unread_chat_count: result.data.unread_chat_count});
                     socket.emit('requestUnreadUpdate', { receiverId:result.data.receiverId, totalUnreadCount: result.data.totalUnreadCount });
                     scrollToBottom();
                   
@@ -83,7 +83,7 @@ socket.on('message', ({ roomId, userId, message,messageId,time,profileImgUrl,sen
      // 만약 채팅방에 있고, 메시지를 보낸 사람이 자신이 아니라면 읽음 처리 요청
      if (userId !== currentUserId) {
         console.log("메시지 수신처리 아이디다름,읽음처리 실행",messageId, roomId, currentUserId)
-        socket.emit('messageReadCount', { messageId, roomId, currentUserId });
+        socket.emit('messageReadCount', { messageId, roomId, currentUserId});
     }
 
      // 시간 포맷팅

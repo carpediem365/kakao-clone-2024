@@ -122,7 +122,7 @@ class User {
   static async getProfileInfo(userId) {
     try {
       const conn = await connect();
-      const sql = 'SELECT user_id , name, status_message, profile_img_url,background_img_url FROM user WHERE user_id = ?';
+      const sql = 'SELECT user_id , name, status_message, profile_img_url,background_img_url,phone_number FROM user WHERE user_id = ?';
       const [profile] = await conn.execute(sql, [userId]);
       conn.end();
       return profile[0];

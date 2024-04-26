@@ -151,8 +151,8 @@
 }
 
 .user-info-display img {
-  max-width: 100px; /* 이미지 최대 너비 설정 */
-  max-height: 100px; /* 이미지 최대 높이 설정 */
+  width: 100px; /* 이미지 최대 너비 설정 */
+  height: 100px; /* 이미지 최대 높이 설정 */
   border-radius: 25px; /* 원형 이미지 */
   display: block;
   margin: auto;

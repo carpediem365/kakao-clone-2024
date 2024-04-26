@@ -12,6 +12,10 @@ const loginRoutes = require('./routes/login');
 const friendsRoutes = require('./routes/friends');
 const chatsRoutes = require('./routes/chats');
 const chatRoutes = require('./routes/chat');
+const findRoutes = require('./routes/find');
+const moreRoutes = require('./routes/more');
+const settingsRoutes = require('./routes/settings');
+
 // 뷰 엔진 설정
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -58,7 +62,7 @@ io.on('connection', (socket) => {
   socket.on('chatMessage', (data) => {
     console.log("chatMessage로 신호는 옴",data);
     console.log("chatMessage",JSON.stringify(data));
-    io.to(data.currentRoomId).emit('message', {roomId: data.currentRoomId, userId: data.userId, message: data.message, messageId: data.messageId, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unreadCount: data.unreadCount});
+    io.to(data.currentRoomId).emit('message', {roomId: data.currentRoomId, userId: data.userId, message: data.message, messageId: data.messageId, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unreadCount: data.unreadCount });
     io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, receiverId: data.receiverId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unread_chat_count: data.unread_chat_count});
   });
 
@@ -66,14 +70,17 @@ io.on('connection', (socket) => {
   socket.on('messageReadCount', async ({ messageId, roomId, currentUserId }) => {
     console.log("읽음처리 실행 server.js messageReadCounts",messageId,roomId, currentUserId)
     try {
+        await ChatModel.markMessagesAsRead(currentUserId, roomId, messageId);
         const result = await ChatModel.messageReadCount(currentUserId, roomId, messageId);
+        const totalUnreadCount = await ChatModel.calculateUnreadMessages(currentUserId);
         console.log("읽음처리 실행 server.js",result)
         const unread_Count = result.unreadCount
         if (result.affectedRows > 0) {
-          console.log("읽음처리 실행 server.js 여기까진ok",messageId, currentUserId , unread_Count,roomId)
+          console.log("읽음처리 실행 server.js 여기까진ok",messageId, currentUserId , unread_Count,totalUnreadCount,roomId)
           try{
             console.log(`Emitting to ${Array.from(io.sockets.adapter.rooms.get(roomId) || []).length} clients in room ${roomId}.`);
-            io.to(roomId).emit('messageRead', { messageId, currentUserId , unread_Count });
+            io.to(roomId).emit('messageRead', { messageId, currentUserId , unread_Count});
+            io.emit('chatRoomRead', {roomId, unread_Count, totalUnreadCount})
             console.log("읽음처리 실행 server.js 굿");
           }catch(e){
             console.error("Error updating read status:", error);
@@ -108,6 +115,9 @@ app.use('/login',loginRoutes);
 app.use('/friends', friendsRoutes);
 app.use('/chats',chatsRoutes);
 app.use('/chat', chatRoutes);
+app.use('/find',findRoutes);
+app.use('/more',moreRoutes);
+app.use('/settings',settingsRoutes);
 
 // 서버 시작
 const port = 3000;

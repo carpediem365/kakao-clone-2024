@@ -188,5 +188,4 @@ router.post('/update-default-image',async(req,res) =>{
   }
 });
 
-
   module.exports = router;

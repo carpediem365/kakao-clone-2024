@@ -29,7 +29,7 @@
         <div class="screen-header__icons">
             <span><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
             <span><i class="fa-solid fa-music fa-lg"></i></span>
-            <span class="icon-with-dot"><a href="settings.html"><i class="fa-solid fa-gear fa-lg"></i></a><span class="screen-header_icons_dot"></span></span>
+            <span class="icon-with-dot"><a href="/settings"><i class="fa-solid fa-gear fa-lg"></i></a><span class="screen-header_icons_dot"></span></span>
           
         </div>
     </header>
@@ -40,13 +40,13 @@
         <div class="user-component">
             <div class="user-component__column">
               <img
-                src="../image/profile.jpg"
+                src="<%= profileInfo.profile_img_url %>"
                 class="user-component__avatar user-component__avatar--xl"
               />
               <div class="user-component__text">
-                <h4 class="user-component__title">김도운</h4>
+                <h4 class="user-component__title"><%= profileInfo.name %></h4>
                 <div class="user-component__subtitle">
-                    <h6>+ 1 787 666 999</h6>
+                    <h6><%= profileInfo.phone_number %></h6>
                     <span class="user-component__text__notification-icon">!</span>
                 </div>
                
@@ -113,18 +113,18 @@
     <nav class="nav">
         <ul class="nav__list">
             <li class="nav__btn">
-                <a class="nav__link" href="friends.html"><i class="fa-regular  fa-user fa-2x"></i></a>
+                <a class="nav__link" href="/friends"><i class="fa-solid fa-user fa-2x"></i></a>
             </li>
             <li class="nav__btn">
-                <a class="nav__link" href="chats.html"> 
-                    <span class="nav_notification badge">1</span>
+                <a class="nav__link" href="/chats"> 
+                    <span class="nav_notification badge" style="<%= totalUnread > 0 ? '' : 'visibility: hidden;' %>"><%= totalUnread %></span>
                     <i class="fa-regular fa-comment fa-2x"></i></a>
             </li>
             <li class="nav__btn">
-                <a class="nav__link" href="find.html"><i class="fa-solid fa-magnifying-glass fa-2x"></i></a>
+                <a class="nav__link" href="/find"><i class="fa-solid fa-magnifying-glass fa-2x"></i></a>
             </li>
             <li class="nav__btn">
-                <a class="nav__link" href="more.html"><span class="nav_dot"></span><i class="fa-solid fa-ellipsis fa-2x"></i></a>
+                <a class="nav__link" href="/more"><span class="nav_dot"></span><i class="fa-solid fa-ellipsis fa-2x"></i></a>
             </li>
         </ul>
     </nav>
