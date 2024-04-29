@@ -194,19 +194,52 @@ document.querySelector('.my-profile').addEventListener('click', function() {
     });
 
 
-// 모든 친구 프로필 요소에 대해 이벤트 리스너 추가
-document.querySelectorAll('.friend-profile').forEach(function(profile) {
-    profile.addEventListener('click', function() {
-        var friendId = this.dataset.userId;
+// // 모든 친구 프로필 요소에 대해 이벤트 리스너 추가
+// document.querySelectorAll('.friend-profile').forEach(function(profile) {
+//     profile.addEventListener('click', function() {
+//         var friendId = this.dataset.userId;
+//         fetch(`/friends/${friendId}`)
+//             .then(response => response.json())
+//             .then(friendData => {
+//                 // 모달창 데이터 업데이트
+//                 const profileImg = friendData.profileInfo.profile_img_url || '/images/basic_profile.jpg';
+//                 const name = friendData.friendName || friendData.name;  //친구 이름 사용
+//                 document.querySelector('.profileEditModal-profile-img').src = profileImg;
+//                 document.querySelector('.profileEditModal-edit-profile').textContent = name;
+//                 document.querySelector('.profileEditModal-edit-statusMessage').textContent = friendData.status_message;
+
+//                 // 배경 이미지 URL 처리
+//                 var backgroundImageUrl = friendData.profileInfo.background_img_url || '/images/default_background.png';
+//                 document.querySelector('.profileEditModal-content').style.backgroundImage = `url(${backgroundImageUrl})`;
+
+//                 // 모달창 열기
+//                 openProfileEditModal(friendId);
+//                 document.querySelector('.profileEditModal_icon').style.display = 'none';
+//                 document.querySelector('.edit-statusMessage').style.display = 'none';
+//             })
+//             .catch(error => {
+//                 console.error('Error fetching friend data:', error);
+//             });
+//     });
+// });
+
+document.querySelector('.friends-screen__list').addEventListener('click', function(event) {
+    console.log("profilemodal 클릭")
+    // event.target은 클릭된 요소를, closest() 메서드는 가장 가까운 .friend-profile 부모를 찾습니다.
+    var clickedElement = event.target.closest('.friend-profile');
+    console.log("profilemodal 클릭1",clickedElement)
+    if (clickedElement) {
+        var friendId = clickedElement.getAttribute('data-user-id');
         fetch(`/friends/${friendId}`)
             .then(response => response.json())
             .then(friendData => {
-                // 모달창 데이터 업데이트
+                // 모달창 데이터 업데이트 로직
+                console.log("friendData",friendData)
                 const profileImg = friendData.profileInfo.profile_img_url || '/images/basic_profile.jpg';
                 const name = friendData.friendName || friendData.name;  //친구 이름 사용
                 document.querySelector('.profileEditModal-profile-img').src = profileImg;
-                document.querySelector('.profileEditModal-edit-profile').textContent = name;
-                document.querySelector('.profileEditModal-edit-statusMessage').textContent = friendData.status_message;
+                document.querySelector('.profileEditModal-edit-profile').textContent = name
+                document.querySelector('.profileEditModal-edit-statusMessage').textContent = friendData.profileInfo.status_message;
 
                 // 배경 이미지 URL 처리
                 var backgroundImageUrl = friendData.profileInfo.background_img_url || '/images/default_background.png';
@@ -220,7 +253,7 @@ document.querySelectorAll('.friend-profile').forEach(function(profile) {
             .catch(error => {
                 console.error('Error fetching friend data:', error);
             });
-    });
+    }
 });
 
 // 프로필 업데이트 요청 함수
@@ -267,6 +300,8 @@ function updateProfile(userId, updatedData) {
     });
 }
 
+
+
 // 변경 사항 저장 버튼 이벤트 리스너
 document.querySelector('.profileEditModal-body_edit form').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -307,7 +342,9 @@ function uploadBackgroundImage() {
     var formData = new FormData();
     var backgroundImageFile = document.getElementById('backgroundImageInput').files[0];
     formData.append('backgroundImage', backgroundImageFile);
-
+    console.log("이미지파일",backgroundImageFile)
+    console.log("이미지파일",document.getElementById('backgroundImageInput').files)
+    
     fetch('/friends/upload-background-image', {
         method: 'POST',
         body: formData

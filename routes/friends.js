@@ -152,12 +152,14 @@ router.post('/upload-profile-image', upload.single('profileImage'), async (req, 
 
 // 배경 이미지 업로드 라우트
 router.post('/upload-background-image', upload.single('backgroundImage'), async (req, res) => {
+  console.log("imageUrl1",req)
   if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
   const baseUrl = config.BASE_URL;
   // 파일 경로 업데이트 로직
   const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+  console.log("imageUrl",imageUrl)
   try {
       await User.updateProfile(req.session.user.user_id, { background_img_url: imageUrl });
       res.json({ success: true, imageUrl });

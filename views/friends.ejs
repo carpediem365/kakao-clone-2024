@@ -27,7 +27,7 @@
     <header class="screen-header">
         <h1 class="screen-header__title">Friends</h1>
         <div class="screen-header__icons">
-            <span><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
+            <span><i class="fa-solid fa-magnifying-glass fa-lg" onclick="toggleSearch(event)"></i></span>
             <span><i class="fa-solid fa-user-plus"></i></span>
             <span><a href="/settings"><i class="fa-solid fa-gear fa-lg"></i></a></span>
         </div>
@@ -53,7 +53,6 @@
                 <!-- <h6 class="user-component__subtitle">this text whatever</h6> -->
               </div>
             </div>
-            <div class="user-component__column"></div>  
           </div>
         <div class="friends-screen__list">
             <div class="friends-screen__list-header">
@@ -68,12 +67,9 @@
                     class="user-component__avatar user-component__avatar--sm"
                   />
                   <div class="user-component__text">
-                    <h4 class="user-component__title user-component__title--not-bold"><%= friend.friend_name %></h4>
-                    <p><%= friend.status_message %></p>
+                    <h4 class="user-component__title"><%= friend.friend_name %></h4>
+                    <p class="user-component__status-message"><%= friend.status_message %></p>
                   </div>
-                </div>
-                <div class="user-component__column">
-
                 </div>
               </div>
               <% }); %>
