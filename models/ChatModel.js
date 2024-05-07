@@ -10,7 +10,7 @@ class ChatModel {
                 SELECT cr.*, p.unread_chat_count, p.last_read_chat_id, cr.updated_at, p.room_name
                 FROM chatting_room AS cr
                 JOIN participant AS p ON cr.id = p.room_id
-                WHERE p.user_id = ?;
+                WHERE p.user_id = ? AND p.visible = TRUE;
             `;
             const [chatRooms] = await conn.execute(chatRoomSql, [userId]);
             let totalUnread = 0;
@@ -47,6 +47,33 @@ class ChatModel {
         try{
             await conn.beginTransaction();
 
+            // 본인과의 채팅방 처리
+        if (userId === friendId) {
+            // 본인과의 채팅방 식별자 생성
+            const selfIdentifier = `${userId}_self`;
+            // 기존에 '나와의 채팅'방이 있는지 확인
+            const [selfRoom] = await conn.query(
+                `SELECT id FROM chatting_room WHERE identifier = ?`,
+                [selfIdentifier]
+            );
+            if (selfRoom.length > 0) {
+                await conn.commit();
+                return selfRoom[0].id; // 이미 존재하는 '나와의 채팅'방 ID 반환
+            }
+            // '나와의 채팅'방 생성
+            const [chatRoomResult] = await conn.query(
+                `INSERT INTO chatting_room (identifier, type) VALUES (?, 'self')`,
+                [selfIdentifier]
+            );
+            const newSelfChatRoomId = chatRoomResult.insertId;
+            // 본인을 참가자로 추가
+            await conn.query(
+                `INSERT INTO participant (user_id, room_id, room_name, unread_chat_count,visible) VALUES (?, ?, '나와의 채팅', 0 , TRUE)`,
+                [userId, newSelfChatRoomId]
+            );
+            await conn.commit();
+            return newSelfChatRoomId;
+        }else{
             // 친구 이름 조회
             const [friendRows] = await conn.query(
                 `SELECT friend_name FROM friend WHERE my_id = ? And friend_id =?`, 
@@ -56,7 +83,10 @@ class ChatModel {
             console.log("친구이름모달",friendRows[0])
 
             const [myRows] = await conn.query(
-                `SELECT friend_name FROM friend WHERE my_id = ? And friend_id =?`, 
+                `SELECT COALESCE(f.friend_name, u.name) AS friend_name
+                FROM user AS u
+                LEFT JOIN friend AS f ON f.friend_id = u.user_id AND f.my_id = ?
+                WHERE u.user_id = ?;`, 
                 [friendId,userId]
             );
             const myName = myRows[0].friend_name;
@@ -83,18 +113,19 @@ class ChatModel {
             console.log("친구이름모달",chatRoomResult[0])
             // 채팅방 참가자 추가
             await conn.query(
-                `INSERT INTO participant (user_id, room_id, room_name, unread_chat_count) VALUES (?, ?, ?, 0)`,
+                `INSERT INTO participant (user_id, room_id, room_name, unread_chat_count, visible) VALUES (?, ?, ?, 0,TRUE)`,
                 [userId, newChatRoomId,friendName]
               );
 
                     // 채팅방 참가자 추가 - 친구
             await conn.query(
-                `INSERT INTO participant (user_id, room_id, room_name, unread_chat_count = 0) VALUES (?, ?, ?, 0)`,
+                `INSERT INTO participant (user_id, room_id, room_name, unread_chat_count, visible) VALUES (?, ?, ?, 0, FALSE)`,
                 [friendId, newChatRoomId, myName]
             );
 
             await conn.commit();
             return newChatRoomId;
+        }
         }catch(error){
             await conn.rollback();
             console.error('Error in createChatRoom', error);
@@ -107,16 +138,28 @@ class ChatModel {
     // 채팅창 추가 모달 친구검색
     static async searchFriends(userId, query) {
         const conn = await connect();
+        console.log("친구검색1", query);
         try {
-            const sql = `
+            // query가 비어있으면 모든 친구를 반환하고, 그렇지 않으면 검색 조건을 적용합니다.
+            const sql = query.trim() === "" ?
+                `
+                SELECT * FROM friend AS f
+                JOIN user AS u ON f.friend_id = u.user_id
+                WHERE f.my_id = ?
+                ` :
+                `
                 SELECT * FROM friend AS f
                 JOIN user AS u ON f.friend_id = u.user_id
                 WHERE f.my_id = ? AND friend_name LIKE CONCAT('%', ?, '%')
-            `;
-            const [friendsList] = await conn.execute(sql, [userId, query]);
-            console.log("친구정보입니다1",friendsList)
+                `;
+    
+            // 쿼리가 비어 있을 경우 매개변수를 조정합니다.
+            const params = query.trim() === "" ? [userId] : [userId, query];
+            console.log("친구검색1", params);
+            const [friendsList] = await conn.execute(sql, params);
+            console.log("친구정보입니다1", friendsList);
             const totalFriends = friendsList.length;
-            return {friendsList,totalFriends};
+            return {friendsList, totalFriends};
         } catch (error) {
             console.error('Error searching friends:', error);
             throw error;
@@ -171,19 +214,18 @@ class ChatModel {
         console.log("채팅메시지senderIds",senderIds[0])
         console.log("채팅메시지senderIds",senderIds[1])
         const friendNamesSql = `
-            SELECT 
-            f.friend_id, 
-            f.friend_name,
-            u.profile_img_url
-        FROM 
-            friend AS f
-        JOIN 
-            user AS u ON f.friend_id = u.user_id
-        WHERE 
-            f.my_id = ? AND f.friend_id IN (${senderIdsFormatted});
+           SELECT 
+                u.user_id AS friend_id,
+                COALESCE(f.friend_name, u.name) AS friend_name,
+                u.profile_img_url
+            FROM 
+                user AS u
+            LEFT JOIN 
+                friend AS f ON f.friend_id = u.user_id AND f.my_id = ?
+            WHERE 
+                u.user_id IN (${senderIdsFormatted});
         `;
         const [friendNames] = await conn.execute(friendNamesSql, [userId]);
-        console.log("채팅메시지임",friendNames)
         // 친구 이름 매핑
         const friendNameMap = friendNames.reduce((acc, curr) => {
             acc[curr.friend_id] = {
@@ -254,13 +296,18 @@ class ChatModel {
         }
     }
     // 채팅 메시지 저장 메소드
-    static async saveChatMessage(roomId, senderId, message) {
+    static async saveChatMessage(roomId, senderId, message, isSelfChat = false) {
         const conn = await connect();
         try {
             await conn.beginTransaction(); // 트랜잭션 시작
-            const sqlInsert = 'INSERT INTO chatting (room_id, sender_id, message,unread_count) VALUES (?, ?, ?, 1)';
-            const results = await conn.execute(sqlInsert, [roomId, senderId, message]);
+            const unreadCount = isSelfChat ? 0 : 1;
+            const sqlInsert = 'INSERT INTO chatting (room_id, sender_id, message,unread_count) VALUES (?, ?, ?, ?)';
+            const results = await conn.execute(sqlInsert, [roomId, senderId, message,unreadCount]);
             const messageId = results[0].insertId;
+
+             // 채팅방을 활성화합니다.
+            const sqlUpdateRoomVisible = 'UPDATE participant SET visible = TRUE WHERE room_id = ?';
+            await conn.execute(sqlUpdateRoomVisible, [roomId]);
 
             const sqlUpdateRead = 'UPDATE participant SET last_read_chat_id = ? WHERE user_id = ? AND room_id = ?';
             await conn.execute(sqlUpdateRead, [messageId, senderId, roomId]);
@@ -285,8 +332,12 @@ class ChatModel {
     static async getFriendNameByUserId(userId, friendId) {
         const conn = await connect();
         try {
-            const sql = `SELECT friend_name as senderName FROM friend WHERE friend_id =? AND my_id =?`;
-            const [senderName] = await conn.execute(sql, [userId, friendId]);
+            const sql = `SELECT COALESCE(f.friend_name, u.name) AS senderName
+                FROM user AS u
+                LEFT JOIN friend AS f ON f.friend_id = u.user_id AND f.my_id = ?
+                WHERE u.user_id = ?;`;
+
+            const [senderName] = await conn.execute(sql, [friendId, userId]);
             return senderName;
         } catch (error) {
             console.error('Error in getFriendNameByUserId', error);

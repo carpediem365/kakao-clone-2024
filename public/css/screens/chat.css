@@ -357,3 +357,13 @@
 .read{
   display: none;
 }
+
+.no-chat-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;  /* 화면의 전체 높이를 차지하도록 설정 */
+  text-align: center;
+  color: #666;   /* 메시지의 색상 설정 */
+  font-size: 16px;  /* 폰트 크기 */
+}

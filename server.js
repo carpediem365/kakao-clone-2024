@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
     console.log("chatMessage로 신호는 옴",data);
     console.log("chatMessage",JSON.stringify(data));
     io.to(data.currentRoomId).emit('message', {roomId: data.currentRoomId, userId: data.userId, message: data.message, messageId: data.messageId, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unreadCount: data.unreadCount });
-    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, receiverId: data.receiverId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unread_chat_count: data.unread_chat_count});
+    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, receiverId: data.receiverId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl, friend_profileImgUrl: data.friend_profileImgUrl, senderName:data.senderName, unread_chat_count: data.unread_chat_count});
   });
 
   // 메시지 읽음 처리
@@ -95,6 +95,15 @@ io.on('connection', (socket) => {
 socket.on('requestUnreadUpdate', data => {
   console.log("requestUnreadUpdate 받음",data,data.receiverId,data.totalUnreadCount)
   io.to(data.receiverId).emit('updateTotalUnread', data.totalUnreadCount);
+});
+
+socket.on('searchFriends', async (data) => {
+  try {
+      const friendsInfo = await ChatModel.searchFriends(data.userId, data.searchTerm);
+      socket.emit('updateFriendsList', friendsInfo);
+  } catch (error) {
+      console.error('Search friends error:', error);
+  }
 });
 
 socket.on('disconnect', () => {

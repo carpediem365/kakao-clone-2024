@@ -58,6 +58,9 @@ function checkUserAndShowAddButton(friendId) {
         if(data.exists){
             if(data.message ==="본인의 ID로는 친구 추가를 할 수 없습니다." || data.message ==="이미 친구로 등록된 ID입니다."){
                 displayUserInfo(data.userInfo, true); // 채팅 버튼 표시
+                document.querySelector('.user-info-display_chat-button').onclick = function(){
+                    initiateChat(friendId)
+                }
             }else{
                 displayUserInfo(data.userInfo);
                 document.querySelector('.add-friend-button').onclick = function() {
@@ -94,6 +97,30 @@ function displayUserInfo(userInfo, displayChat = false) {
     // 에러메시지 none처러 
     const errorMsgElement = document.querySelector('.add-friend_error-msg');
     errorMsgElement.style.display = 'none';
+}
+
+// 채팅 시작 또는 채팅방 생성
+function initiateChat(friendId) {
+    // 서버에 공통 채팅방 존재 여부 확인 요청
+    fetch('/chats/create-chat',{
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ friendId: friendId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.id) {
+            window.location.href = `/chat/${data.id}`;
+          } else {
+            alert('채팅방 생성 또는 접근에 실패했습니다.');
+        }
+    })
+    .catch(error => {
+        console.error('채팅방 확인 또는 생성 중 오류 발생:', error);
+        alert('채팅방을 확인하거나 생성하는 동안 오류가 발생했습니다.');
+    });
 }
 
 // 친구 추가 실행 함수

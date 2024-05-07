@@ -27,18 +27,19 @@
     <header class="screen-header">
         <h1 class="screen-header__title">Chats</h1>
         <div class="screen-header__icons">
-            <span><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
+            <span><i class="fa-solid fa-magnifying-glass fa-lg" onclick="toggleSearch(event)"></i></span>
             <span><i class="fas fa-comment-medical fa-lg" title="새로운 채팅"></i></span>
             <span><i class="fa-solid fa-music fa-lg"></i></span>
             <span><a href="/settings"><i class="fa-solid fa-gear fa-lg"></i></a></span>
         </div>
     </header>
-
+    <input type="text" id="searchInput_chats" placeholder="친구 검색..." oninput="filterFriends()">
    
 
     <main class="main-screen">
+        <% if (chatRooms.length > 0) { %>
         <% chatRooms.forEach(room => { %>
-            <% const otherParticipant = room.participants.find(participant => participant.user_id !== currentUserId); %>
+            <% const otherParticipant = room.participants.find(participant => participant.user_id !== currentUserId) || room.participants[0]; %>
         <a href="chat/<%= room.id %>" id="room-<%= room.id %>">
         <div id="chatsPart" class="user-component">
             <div class="user-component__column">
@@ -62,6 +63,11 @@
           </div>
         </a>
         <% }); %>
+        <% } else { %>
+            <div class="no-chat-message">
+                <p>채팅방이 없습니다. 새로운 채팅을 시작하세요.</p>
+            </div>
+        <% } %>
     </main>
 
     

@@ -62,6 +62,13 @@
             </div>
             <div class="settings__setting-column">Latest Version</div>
         </li>
+        <li class="settings__setting">
+            <div class="settings__setting-column" id="logout" style="cursor: pointer;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>로그아웃</span>
+            </div>
+            <div class="settings__setting-column"></div>
+        </li>
        </ul>
     </main>
 
@@ -91,5 +98,19 @@
     </div>
 
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
+    <script>document.querySelector('#logout').addEventListener('click', function() {
+        if (confirm('로그아웃하시겠습니까?')) {
+            // 서버에 로그아웃 요청을 보냅니다.
+            fetch('/settings/logout', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        // 로그아웃 성공 시 로그인 페이지로 리디렉트
+                        window.location.href = '/';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+    </script>
 </body>
 </html>

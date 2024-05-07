@@ -1,4 +1,6 @@
 const connect = require('../db');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 class User {
   constructor(userId, passWord, phoneNumber, userName) {
@@ -12,8 +14,9 @@ class User {
   async save() {
     try {
       const conn = await connect();
+      const hashedPassword = await bcrypt.hash(this.passWord, saltRounds);
       const sql = 'INSERT INTO User (user_id, password, phone_number, name) VALUES (?, ?, ?, ?)';
-      await conn.execute(sql, [this.userId, this.passWord, this.phoneNumber, this.userName]);
+      await conn.execute(sql, [this.userId, hashedPassword, this.phoneNumber, this.userName]);
 
       // const friendSql = 'INSERT INTO Friend (my_id) VALUES (?)';
       // await conn.execute(friendSql, [this.userId]); 
@@ -66,14 +69,18 @@ class User {
   static async authenticate(userId, passWord) {
     const conn = await connect();
     try {
-      const sql = 'SELECT * FROM user WHERE user_id = ? AND password = ?';
-      const [rows] = await conn.execute(sql, [userId, passWord]);
+      const sql = 'SELECT * FROM user WHERE user_id = ?';
+      const [rows] = await conn.execute(sql, [userId]);
       if (rows.length > 0) {
         console.log("로그인 성공", rows[0]);
-        return rows[0];
-      } else {
-        return null;
+        const user = rows[0];
+        const match = await bcrypt.compare(passWord, user.password);
+        if(match){
+          console.log("로그인 성공", user);
+          return user;
+        }
       }
+      return null;
     } catch (error) {
       throw error;
     } finally {
@@ -173,7 +180,6 @@ class User {
       throw error;
   }
 }
-
 static async addFriend(userId, friendId) {
   try {
       const conn = await connect();
@@ -189,7 +195,7 @@ static async addFriend(userId, friendId) {
           throw new Error(`'${friendId}'는 이미 친구로 등록된 ID입니다.`);
       }
 
-     console.log("이건 뭘까요?", friendExists)
+    console.log("이건 뭘까요?", friendExists)
       // 친구추가
       const result = await conn.execute('INSERT INTO friend (my_id, friend_id,friend_name) VALUES (?, ?, ?)', [userId, friendId,friendExists[0].name]);
       conn.end();

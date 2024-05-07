@@ -45,7 +45,7 @@ const messageForm = document.getElementById('message-form');
                     const result = await response.json();
                     console.log('Message sent successfully2:', result);
                     messageInput.value = ''; // 메시지 전송 후 입력 필드 초기화
-                    socket.emit('chatMessage', { currentRoomId, userId:result.data.userId, message:result.data.message, messageId: result.data.messageId, profileImgUrl:result.data.profileImgUrl ,senderName: result.data.senderName, unreadCount: result.data.unreadCount, unread_chat_count: result.data.unread_chat_count});
+                    socket.emit('chatMessage', { currentRoomId, userId:result.data.userId, message:result.data.message, messageId: result.data.messageId, profileImgUrl:result.data.profileImgUrl, friend_profileImgUrl:result.data.friend_profileImgUrl, senderName: result.data.senderName, unreadCount: result.data.unreadCount, unread_chat_count: result.data.unread_chat_count});
                     socket.emit('requestUnreadUpdate', { receiverId:result.data.receiverId, totalUnreadCount: result.data.totalUnreadCount });
                     scrollToBottom();
                   

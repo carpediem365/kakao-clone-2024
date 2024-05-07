@@ -408,7 +408,8 @@
   left: 15px;
 }
 
-#searchInput {
+#searchInput_friends,
+#searchInput_chats {
   display: none;
   width: 90%; 
   padding: 10px; 

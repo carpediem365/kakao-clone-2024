@@ -26,41 +26,67 @@ socket.on('updateTotalUnread', (totalUnread) => {
 //     }
 // });
 
-window.onclick = function(event) {
-    console.log("검색닫아");
-    var searchInput = document.getElementById('searchInput');
-    if (searchInput.style.display === 'block' && !searchInput.contains(event.target)) {
-        console.log("검색닫아1");
-        searchInput.style.display = 'none';
-      }
-    };
+// window.onclick = function(event) {
+//     console.log("검색닫아");
+//     var searchInput = document.getElementById('searchInput');
+//     if (searchInput.style.display === 'block' && !searchInput.contains(event.target)) {
+//         console.log("검색닫아1");
+//         searchInput.style.display = 'none';
+//       }
+//     };
+
+function filterFriends() {
+    var searchInput = document.getElementById('searchInput_friends');
+    const filter = searchInput.value.toUpperCase();
+
+    if (searchInput.style.display === 'block' && filter.length >= 0) {
+        socket.emit('searchFriends', { searchTerm: filter, userId: currentUserId });
+    }
+}
+
+socket.on('updateFriendsList', (data) => {
+    console.log("친구정보 소켓",data);
+    displayFriends(data); // 검색 결과를 화면에 표시
+});
 
 function toggleSearch(event) {
-    var searchInput = document.getElementById('searchInput');
-    console.log("검색열어");
+    console.log("검색창 클릭");
+    var searchInput = document.getElementById('searchInput_friends');
     if (searchInput.style.display === 'none') {
       searchInput.style.display = 'block'; // 검색 필드를 보여줍니다.
       searchInput.focus(); // 입력을 받기 위해 검색 필드에 포커스를 줍니다.
+      window.addEventListener('click', closeSearchOnClickOutside);
     } else {
       searchInput.style.display = 'none'; // 검색 필드를 숨깁니다.
+      window.removeEventListener('click', closeSearchOnClickOutside);
     }
     event.stopPropagation(); // 이벤트 버블링을 중단
-  }
+  };
 
-// 친구 목록을 필터링하는 함수
-function filterFriends() {
-    const searchInput = document.getElementById('searchInput');
-    if(searchInput.style.display === 'block'){
-        const filter = searchInput.value.toUpperCase();
-    const filteredFriends = friendsList.filter(friend => {
-      return friend.friend_name.toUpperCase().includes(filter);
-    });
-    displayFriends(filteredFriends); // 필터링된 친구 목록을 화면에 표시하는 함수
+  function closeSearchOnClickOutside(event) {
+    var searchInput = document.getElementById('searchInput_friends');
+    if (searchInput.style.display === 'block' && !searchInput.contains(event.target)) {
+        searchInput.style.display = 'none';
+        // 이벤트 리스너 제거
+        window.removeEventListener('click', closeSearchOnClickOutside);
     }
-  }
+};
+
+// // 친구 목록을 필터링하는 함수
+// function filterFriends() {
+//     const searchInput = document.getElementById('searchInput');
+//     if(searchInput.style.display === 'block'){
+//         const filter = searchInput.value.toUpperCase();
+//     const filteredFriends = friendsList.filter(friend => {
+//       return friend.friend_name.toUpperCase().includes(filter);
+//     });
+//     displayFriends(filteredFriends); // 필터링된 친구 목록을 화면에 표시하는 함수
+//     }
+//   }
 
   // 친구 목록을 받아 HTML로 변환하여 화면에 표시하는 함수
 function displayFriends(friends) {
+    console.log("친구정보입니당1",friends);
     const friendsContainer = document.querySelector('.friends-screen__list');
     const totalFriendsCountElement = document.querySelector('.total-friends-count');
 
@@ -72,12 +98,12 @@ function displayFriends(friends) {
     listHeader.className = 'friends-screen__list-header';
     listHeader.innerHTML = `
         <span>친구</span>
-        <span class="total-friends-count">${friends.length}</span>
+        <span class="total-friends-count">${friends.totalFriends}</span>
     `;
     friendsContainer.appendChild(listHeader);
 
 
-    friends.forEach(friend => {
+    friends.friendsList.forEach(friend => {
         const friendElement = document.createElement('div');
         friendElement.className = 'user-component friend-profile';
         friendElement.setAttribute('data-user-id', friend.friend_id);
@@ -92,10 +118,8 @@ function displayFriends(friends) {
         `;
         friendsContainer.appendChild(friendElement);
     });
-}
-
+};
   // 페이지가 로드될 때 실행
 window.onload = function() {
-    displayFriends(friendsList); // 전체 친구 목록을 화면에 표시
-    document.getElementById('searchInput').style.display = 'none';
+    document.getElementById('searchInput_friends').style.display = 'none';
   };

@@ -60,7 +60,6 @@ router.get('/check-user/:friendId', async (req, res) => {
     }
 });
 
-
 router.post('/add-friend', async (req, res) => {
   const userId = req.session.user ? req.session.user.user_id : null;
   const friendId = req.body.friendId;
@@ -97,11 +96,18 @@ router.get('/:id' , async (req,res) => {
     const [profileInfo, friendInfo]  = await User.getFriendProfileInfo(userId,req.session.user.user_id);
     console.log("/id 요청friend",friendInfo)
     console.log("/id 요청friend",profileInfo)
-    responseData = {
-      profileInfo, // 친구의 프로필 정보
-      friendName: friendInfo.friend_name // 친구 목록에서의 이름
-    };
+    if (friendInfo) {  // friendInfo가 존재하는지 확인
+      console.log("/id 요청friend", friendInfo);
+      console.log("/id 요청friend", profileInfo);
+      responseData = {
+          profileInfo, // 친구의 프로필 정보
+          friendName: friendInfo.friend_name // 친구 목록에서의 이름
+      };
+  } else {
+      console.log("No friendInfo available");
+      responseData = { profileInfo };
   }
+}
   res.json(responseData);
 })
 
@@ -189,5 +195,6 @@ router.post('/update-default-image',async(req,res) =>{
       res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
+
 
   module.exports = router;

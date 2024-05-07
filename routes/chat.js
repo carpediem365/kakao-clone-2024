@@ -11,24 +11,27 @@ router.get('/:roomId', async(req,res)=>{
         const chatMessages = await ChatModel.getChatMessages(roomId,userId);
         const participants = await ChatModel.getRoomParticipants(userId,roomId);
         const lastMessageId = await ChatModel.getLatestMessageId(roomId);
-        let result = null;
+        let result = { unreadCount: 0 };
         // 읽음 처리 실행
-        if (lastMessageId.id) {
+        if (lastMessageId  && lastMessageId.id) {
             await ChatModel.markMessagesAsRead(userId, roomId, lastMessageId.id);
             result = await ChatModel.messageReadCount(userId, roomId, lastMessageId.id)
             console.log("읽음처리 실행 chat.js messageReadCounts")
-            req.app.get('io').in(roomId).emit('messageRead', {
-                messageId: lastMessageId.id,
-                currentUserId: userId,
-                unread_Count: result.unreadCount
-            });
-            
+            if (result) {  // result가 유효한지 확인
+                console.log("읽음처리 실행 chat.js messageReadCounts");
+                req.app.get('io').in(roomId).emit('messageRead', {
+                    messageId: lastMessageId.id,
+                    currentUserId: userId,
+                    unread_Count: result.unreadCount
+                });
+            }
+            console.log("최근 메시지 ID:", lastMessageId.id);
         }
-        console.log("최근 메시지 ID:", lastMessageId.id);
+        
         console.log("신호1",chatRoomInfo)
         console.log("신호1",chatRoomInfo.room)
-        // console.log("신호2",chatMessages)
-        console.log("unreadCount임",chatMessages.unreadCount)
+        console.log("신호2",chatMessages)
+        
         console.log("participants",participants)
         res.render('chat', { 
             roomId : roomId,
@@ -38,8 +41,8 @@ router.get('/:roomId', async(req,res)=>{
             messages: chatMessages,
             currentUserId: req.session.user.user_id,
             participants: participants,
-            unreadCount : result.unreadCount,
-            messageId : lastMessageId.id
+            unreadCount : result.unreadCount ? result.unreadCount : 0,
+            messageId : lastMessageId ? lastMessageId.id : null
         });
     } catch (error) {
       console.error(error);
@@ -53,23 +56,51 @@ router.post('/send-message/:roomId', async (req,res)=> {
     const userId = req.session.user.user_id;
     const { message } = req.body;
     try{
-        const LatestMessageId = await ChatModel.saveChatMessage(roomId, userId, message);
-        const participants = await ChatModel.getRoomParticipants(userId,roomId);
+        let participants = await ChatModel.getRoomParticipants(userId,roomId);
+        let LatestMessageId
+        if(participants.length === 1 && participants[0].user_id === userId){
+            LatestMessageId = await ChatModel.saveChatMessage(roomId, userId, message,true);
+        }else{
+            LatestMessageId = await ChatModel.saveChatMessage(roomId, userId, message);
+        }
+        participants = await ChatModel.getRoomParticipants(userId,roomId);
+        // const LatestMessageId = await ChatModel.saveChatMessage(roomId, userId, message);
         const lastMessageId = await ChatModel.getLatestMessageId(roomId);
-        
-        console.log("chat.js lastMessageId",lastMessageId)
-        console.log("chat.js lastMessageId",lastMessageId.id)
+
+        console.log("chat.js lastMessageId1",LatestMessageId)
+        console.log("chat.js lastMessageId2",lastMessageId)
+        console.log("chat.js lastMessageId3",lastMessageId.id)
         console.log("chat,js participants:", participants);
+        
+        if(participants.length ===1 && participants[0].user_id === userId){
+            console.log("Handling self-chat:", roomId);
+            res.status(200).json({
+                message: "Message sent successfully",
+                data: {
+                    roomId: roomId,
+                    userId: userId,
+                    receiverId: userId,
+                    name: participants[0].name,
+                    profileImgUrl: participants[0].profile_img_url,
+                    senderName: participants[0].name,
+                    message: message,
+                    messageId: lastMessageId.id,
+                    unreadCount: 0,
+                    totalUnreadCount: 0
+                }
+            });
+        }else{
         // 현재 사용자 정보 찾기
         const specificUserInfo = participants.find(participant => participant.user_id === userId);
 
          // 친구(다른 참가자) 정보 찾기
          const friendInfo = participants.find(participant => participant.user_id !== userId);
 
-         const totalUnreadCount = await ChatModel.calculateUnreadMessages(friendInfo.user_id);
+        
          if (friendInfo) {
             // 친구가 설정한 이름 가져오기
             const senderName = await ChatModel.getFriendNameByUserId(userId, friendInfo.user_id);
+            const totalUnreadCount = await ChatModel.calculateUnreadMessages(friendInfo.user_id);
             console.log("Friend's name for user:", senderName);
             console.log("chat,js specificUserInfo:", specificUserInfo);
         // 필요한 정보 조합
@@ -79,6 +110,7 @@ router.post('/send-message/:roomId', async (req,res)=> {
             receiverId : friendInfo.user_id,
             name: specificUserInfo.name,
             profileImgUrl: specificUserInfo.profile_img_url,
+            friend_profileImgUrl: friendInfo.profile_img_url,
             senderName: senderName[0].senderName || specificUserInfo.name,
             message : message,
             messageId : lastMessageId.id,
@@ -107,6 +139,7 @@ router.post('/send-message/:roomId', async (req,res)=> {
     }else{
         throw new Error("Friend not found in this room");
     }
+}
     } catch (error) {
         console.error("Failed to send message:", error);
         res.status(500).send("Failed to send message1");
