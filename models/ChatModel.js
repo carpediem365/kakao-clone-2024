@@ -10,7 +10,8 @@ class ChatModel {
                 SELECT cr.*, p.unread_chat_count, p.last_read_chat_id, cr.updated_at, p.room_name
                 FROM chatting_room AS cr
                 JOIN participant AS p ON cr.id = p.room_id
-                WHERE p.user_id = ? AND p.visible = TRUE;
+                WHERE p.user_id = ? AND p.visible = TRUE
+                ORDER BY cr.updated_at DESC;
             `;
             const [chatRooms] = await conn.execute(chatRoomSql, [userId]);
             let totalUnread = 0;
@@ -138,7 +139,6 @@ class ChatModel {
     // 채팅창 추가 모달 친구검색
     static async searchFriends(userId, query) {
         const conn = await connect();
-        console.log("친구검색1", query);
         try {
             // query가 비어있으면 모든 친구를 반환하고, 그렇지 않으면 검색 조건을 적용합니다.
             const sql = query.trim() === "" ?
@@ -155,9 +155,7 @@ class ChatModel {
     
             // 쿼리가 비어 있을 경우 매개변수를 조정합니다.
             const params = query.trim() === "" ? [userId] : [userId, query];
-            console.log("친구검색1", params);
             const [friendsList] = await conn.execute(sql, params);
-            console.log("친구정보입니다1", friendsList);
             const totalFriends = friendsList.length;
             return {friendsList, totalFriends};
         } catch (error) {

@@ -1,4 +1,3 @@
-// modal.js 파일에 추가
 // 모달 열기 함수
 function openAddFriendModal() {
     document.getElementById('addFriendModal').style.display = 'block';
@@ -34,9 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
         counter.textContent = `${length}/${maxLength}`;
     });
 });
-
-// 친구 ID 입력 필드
-
 
 // 친구 추가 폼 이벤트 리스너
 document.getElementById('addFriendForm').addEventListener('submit', function(e) {
@@ -83,9 +79,8 @@ function displayUserInfo(userInfo, displayChat = false) {
     // 사용자 정보 표시 로직
     const userInfoDisplay = document.querySelector('.user-info-display');
     userInfoDisplay.innerHTML = `<img src="${userInfo.profile_img_url}" alt="Profile Image" />
-                                 <p>${userInfo.name}</p>
-                                 `;
-
+                                <p>${userInfo.name}</p>
+                                `;
     // 채팅 또는 친구 추가 버튼 표시
     if (displayChat) {
         // '1대1 채팅하기' 버튼 표시
@@ -94,7 +89,7 @@ function displayUserInfo(userInfo, displayChat = false) {
         // '친구 추가' 버튼 표시
         userInfoDisplay.innerHTML += `<button class="add-friend-button">친구 추가</button>`;
     }                           
-    // 에러메시지 none처러 
+    // 에러메시지 none처리
     const errorMsgElement = document.querySelector('.add-friend_error-msg');
     errorMsgElement.style.display = 'none';
 }

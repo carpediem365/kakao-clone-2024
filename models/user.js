@@ -12,50 +12,25 @@ class User {
 
   // 회원가입 처리 메서드
   async save() {
+    const conn = await connect();
     try {
-      const conn = await connect();
       const hashedPassword = await bcrypt.hash(this.passWord, saltRounds);
       const sql = 'INSERT INTO User (user_id, password, phone_number, name) VALUES (?, ?, ?, ?)';
       await conn.execute(sql, [this.userId, hashedPassword, this.phoneNumber, this.userName]);
-
-      // const friendSql = 'INSERT INTO Friend (my_id) VALUES (?)';
-      // await conn.execute(friendSql, [this.userId]); 
-      
-      conn.end();
-      console.log('User saved to the database');
     } catch (error) {
       console.error('Error saving user to the database:', error);
       throw error;
+    }finally {
+      if (conn) {
+        conn.end();
+      }
     }
   }
 
-  // async save() {
-  //   const conn = await connect();
-  //   try {
-  //     await conn.beginTransaction(); // 트랜잭션 시작
-  
-  //     const userSql = 'INSERT INTO User (user_id, password, phone_number, name) VALUES (?, ?, ?, ?)';
-  //     await conn.execute(userSql, [this.userId, this.passWord, this.phoneNumber, this.userName]);
-  
-  //     const friendSql = 'INSERT INTO Friend (my_id) VALUES (?)';
-  //     await conn.execute(friendSql, [this.userId]);
-  
-  //     await conn.commit(); // 트랜잭션 커밋
-  //     console.log('User and friend data saved to the database');
-  //   } catch (error) {
-  //     await conn.rollback(); // 트랜잭션 롤백
-  //     console.error('Error during database transaction, rolled back:', error);
-  //     throw error;
-  //   } finally {
-  //     conn.end();
-  //   }
-  // }
-  
-
   // 이메일 중복을 확인하는 정적 메서드
   static async userIdExists(userId) {
+    const conn = await connect();
     try {
-      const conn = await connect();
       const [rows] = await conn.execute('SELECT * FROM user WHERE user_id = ?', [userId]);
       conn.end();
       return rows.length > 0; // 이메일이 존재하면 true, 그렇지 않으면 false 반환
@@ -63,9 +38,14 @@ class User {
     } catch (error) {
       console.error('Error during userId check:', error);
       throw error;
+    }finally {
+      if (conn) {
+        await conn.end();
+      }
     }
   }
 
+  // 로그인 처리 메서드
   static async authenticate(userId, passWord) {
     const conn = await connect();
     try {
@@ -84,15 +64,17 @@ class User {
     } catch (error) {
       throw error;
     } finally {
-      await conn.end();
+      if (conn) {
+        await conn.end();
+      }
     }
   }
 
 
   // 친구 목록 조회
   static async getFriendsList(userId){
+    const conn = await connect();
     try{
-      const conn = await connect();
       const friendsQuery  = `
         SELECT 
         f.friend_id, 
@@ -122,13 +104,17 @@ class User {
     }catch(error){
       console.error('Error fetching friend list:', error);
       throw error;
+    }finally {
+      if (conn) {
+        await conn.end();
+      }
     }
   }
 
   // 프로필 정보 조회
   static async getProfileInfo(userId) {
+    const conn = await connect();
     try {
-      const conn = await connect();
       const sql = 'SELECT user_id , name, status_message, profile_img_url,background_img_url,phone_number FROM user WHERE user_id = ?';
       const [profile] = await conn.execute(sql, [userId]);
       conn.end();
@@ -136,12 +122,16 @@ class User {
     } catch (error) {
       console.error('Error fetching profile info:', error);
       throw error;
+    }finally {
+      if (conn) {
+        await conn.end();
+      }
     }
   }
 // 친구 프로필 모달창 띄우는 정보 조회
   static async getFriendProfileInfo(friendId,userId) {
+    const conn = await connect();
     try {
-      const conn = await connect();
       const sql = 'SELECT user_id , name, status_message, profile_img_url,background_img_url FROM user WHERE user_id = ?';
       const [profile] = await conn.execute(sql, [friendId]);
       const friendSql = 'SELECT friend_name from friend where friend_id = ? AND my_id = ?'
@@ -151,12 +141,16 @@ class User {
     } catch (error) {
       console.error('Error fetching profile info:', error);
       throw error;
+    }finally {
+      if (conn) {
+        await conn.end();
+      }
     }
   }
 
   static async checkUserAndFriendship(userId, friendId) {
+    const conn = await connect();
     try {
-      const conn = await connect();
       // 친구 ID 존재 여부 확인
       const [friendExists] = await conn.execute('SELECT name,profile_img_url FROM user WHERE user_id = ?', [friendId]);
       if (friendExists.length === 0) {
@@ -178,11 +172,15 @@ class User {
   } catch (error) {
       console.error('checkUserAndFriendship 중 에러 발생:', error);
       throw error;
+  }finally {
+    if (conn) {
+      await conn.end();
+    }
   }
 }
 static async addFriend(userId, friendId) {
+  const conn = await connect();
   try {
-      const conn = await connect();
       // 친구 ID 존재 여부 확인
       const [friendExists] = await conn.execute('SELECT * FROM user WHERE user_id = ?', [friendId]);
       if (friendExists.length === 0) {
@@ -203,25 +201,26 @@ static async addFriend(userId, friendId) {
   } catch (error) {
       console.error('친구 추가 중 에러 발생:', error);
       throw error;
+  }finally {
+    if (conn) {
+      await conn.end();
+    }
   }
 }
 
  // 프로필 업데이트 메서드
  static async updateProfile(userId, updatedData) {
+  const conn = await connect();
   try {
-      const conn = await connect();
       let updateQuery = 'UPDATE user SET ';
       const queryParams = [];
 
       // 데이터를 동적으로 처리
       for (let [key, value] of Object.entries(updatedData)) {
-          updateQuery += `${key} = ?, `;
+          updateQuery += `${key} = ?,`;
           queryParams.push(value);
       }
-      console.log("업데이트 쿼리", updateQuery)
-      let updateQuery1 = updateQuery.slice(0, -2)
-      console.log("업데이트 쿼리", updateQuery1)
-      updateQuery = updateQuery.slice(0, -2) + ' WHERE user_id = ?'; // 마지막 쉼표 제거
+      updateQuery = updateQuery.slice(0, -1) + ' WHERE user_id = ?'; // 마지막 쉼표 제거
       queryParams.push(userId);
 
       const [result] = await conn.execute(updateQuery, queryParams);
@@ -231,11 +230,15 @@ static async addFriend(userId, friendId) {
   } catch (error) {
       console.error('Error updating profile in User model:', error);
       throw error;
+  }finally {
+    if (conn) {
+      await conn.end();
+    }
   }
 }
 
  // 친구 이름 업데이트 메서드
- static async updateFriendName(myId, friendId, newName) {
+static async updateFriendName(myId, friendId, newName) {
   const conn = await connect();
   try {
     await conn.beginTransaction();
@@ -273,9 +276,10 @@ static async addFriend(userId, friendId) {
   }
 }
 
+// 기본이미지 처리 메서드
 static async updateDefaultImage(userId, imagePath, imageType){
+  const conn = await connect();
   try{
-    const conn = await connect();
     let updateQuery = `UPDATE user SET ${imageType === 'profile' ? 'profile_img_url' : 'background_img_url'} = ? WHERE user_id = ?`;
     await conn.execute(updateQuery, [imagePath, userId]);
     conn.end();
@@ -283,10 +287,12 @@ static async updateDefaultImage(userId, imagePath, imageType){
   } catch (error) {
       console.error('Error updating default image:', error);
       throw error;
+  }finally {
+    if (conn) {
+      await conn.end();
+    }
   }
 }
-
 }
-
 
 module.exports = User;

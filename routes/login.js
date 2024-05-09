@@ -5,13 +5,8 @@ const User = require('../models/user');
 router.post('/', async (req, res) => {
     const { userId, password } = req.body;
     try {
-        // 여기에 사용자 인증 로직 구현
-        // 예시: User.authenticate(username, password)
         const user  = await User.authenticate(userId, password);
-        console.log("유저정보 ", user);
-        
         if (user) {
-            // 로그인 성공 시 friends.html로 리다이렉트
             req.session.user = { 
                 user_id: user.user_id, 
                 name: user.name,

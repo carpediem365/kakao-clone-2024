@@ -1,9 +1,9 @@
 const socket = io();
 const userProfileElement  = document.querySelector('.my-profile');
 const currentUserId = userProfileElement .getAttribute('data-user-id');
-console.log("frineds.js user_id",currentUserId)
 socket.emit('setup', {currentUserId});
 
+// 읽지 않은 채팅개수 NAV바 업데이트
 socket.on('updateTotalUnread', (totalUnread) => {
     console.log("frineds.js user_id1",totalUnread)
     const totalUnreadCountElement = document.querySelector('.nav_notification');
@@ -15,42 +15,20 @@ socket.on('updateTotalUnread', (totalUnread) => {
         }
     });
 
-// document.addEventListener('DOMContentLoaded', () => {
-//     const totalUnreadCount = localStorage.getItem('totalUnread') || 0;
-//     const totalUnreadCountElement = document.querySelector('.nav_notification');
-//     if (totalUnreadCount > 0) {
-//         totalUnreadCountElement.textContent = totalUnreadCount;
-//         totalUnreadCountElement.style.visibility = 'visible';
-//     } else {
-//         totalUnreadCountElement.style.visibility = 'hidden';
-//     }
-// });
-
-// window.onclick = function(event) {
-//     console.log("검색닫아");
-//     var searchInput = document.getElementById('searchInput');
-//     if (searchInput.style.display === 'block' && !searchInput.contains(event.target)) {
-//         console.log("검색닫아1");
-//         searchInput.style.display = 'none';
-//       }
-//     };
-
 function filterFriends() {
     var searchInput = document.getElementById('searchInput_friends');
     const filter = searchInput.value.toUpperCase();
-
     if (searchInput.style.display === 'block' && filter.length >= 0) {
         socket.emit('searchFriends', { searchTerm: filter, userId: currentUserId });
     }
 }
 
+// 검색한 친구정보 표시
 socket.on('updateFriendsList', (data) => {
-    console.log("친구정보 소켓",data);
     displayFriends(data); // 검색 결과를 화면에 표시
 });
 
 function toggleSearch(event) {
-    console.log("검색창 클릭");
     var searchInput = document.getElementById('searchInput_friends');
     if (searchInput.style.display === 'none') {
       searchInput.style.display = 'block'; // 검색 필드를 보여줍니다.
@@ -60,7 +38,7 @@ function toggleSearch(event) {
       searchInput.style.display = 'none'; // 검색 필드를 숨깁니다.
       window.removeEventListener('click', closeSearchOnClickOutside);
     }
-    event.stopPropagation(); // 이벤트 버블링을 중단
+    event.stopPropagation(); // 이벤트 버블링을 중단, 안그러면 돋보기 눌러도 검색창이 안나오고 바로 사라짐 body요소까지 클릭되어서 문제 (바깥쪽 클릭 감지로직과 충돌 방지)
   };
 
   function closeSearchOnClickOutside(event) {
@@ -72,24 +50,9 @@ function toggleSearch(event) {
     }
 };
 
-// // 친구 목록을 필터링하는 함수
-// function filterFriends() {
-//     const searchInput = document.getElementById('searchInput');
-//     if(searchInput.style.display === 'block'){
-//         const filter = searchInput.value.toUpperCase();
-//     const filteredFriends = friendsList.filter(friend => {
-//       return friend.friend_name.toUpperCase().includes(filter);
-//     });
-//     displayFriends(filteredFriends); // 필터링된 친구 목록을 화면에 표시하는 함수
-//     }
-//   }
-
   // 친구 목록을 받아 HTML로 변환하여 화면에 표시하는 함수
 function displayFriends(friends) {
-    console.log("친구정보입니당1",friends);
     const friendsContainer = document.querySelector('.friends-screen__list');
-    const totalFriendsCountElement = document.querySelector('.total-friends-count');
-
     // 현재 표시된 친구 목록을 지움
     friendsContainer.innerHTML = '';
 
@@ -102,7 +65,6 @@ function displayFriends(friends) {
     `;
     friendsContainer.appendChild(listHeader);
 
-
     friends.friendsList.forEach(friend => {
         const friendElement = document.createElement('div');
         friendElement.className = 'user-component friend-profile';
@@ -112,7 +74,7 @@ function displayFriends(friends) {
                 <img src="${friend.profile_img_url || '/images/basic_profile.jpg'}" alt="Friend Image" class="user-component__avatar user-component__avatar--sm">
                 <div class="user-component__text">
                     <h4 class="user-component__title">${friend.friend_name}</h4>
-                    <p class="user-component__status-message">${friend.status_message || ''}</p> <!-- status_message가 없으면 빈칸 표시 -->
+                    <p class="user-component__status-message">${friend.status_message || ''}</p> 
                 </div>
             </div>
         `;
@@ -122,4 +84,4 @@ function displayFriends(friends) {
   // 페이지가 로드될 때 실행
 window.onload = function() {
     document.getElementById('searchInput_friends').style.display = 'none';
-  };
+};

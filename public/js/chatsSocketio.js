@@ -36,6 +36,10 @@ socket.on('updateChatsRoom', (updatedRoom) => {
   }
 
   updateRoomDetails(roomElement, updatedRoom);
+
+    // 채팅방을 목록의 맨 위로 이동
+    const mainScreen = document.querySelector('main.main-screen');
+    mainScreen.insertBefore(roomElement, mainScreen.firstChild);
 });
 
 function createRoomElement(roomData) {
@@ -47,7 +51,7 @@ function createRoomElement(roomData) {
           <div class="user-component__column">
           <img src="${roomData.friend_profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
               <div class="user-component__text">
-                  <h4 class="user-component__title">${roomData.senderName || 'New Room'}</h4>
+                  <h4 class="user-component__title">${roomData.senderName || updatedRoom.userId}</h4>
                   <h6 class="user-component__subtitle">${roomData.message}</h6>
               </div>
           </div>

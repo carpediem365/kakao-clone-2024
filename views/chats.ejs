@@ -44,7 +44,7 @@
         <div id="chatsPart" class="user-component">
             <div class="user-component__column">
               <img
-              src="<%= otherParticipant && otherParticipant.profile_img_url ? otherParticipant.profile_img_url : '/images/basic_profile.jpg' %>"
+              src="<%= otherParticipant.profile_img_url ? otherParticipant.profile_img_url : '/images/basic_profile.jpg' %>"
                 class="user-component__avatar user-component__avatar"
               />
               <div class="user-component__text">
@@ -54,7 +54,7 @@
             </div>
             <div class="user-component__column">
                 <span class="user-component__time"><%= room.updated_at %></span>
-                <% if (room.unread_chat_count && room.unread_chat_count > 0) { %>
+                <% if (room.unread_chat_count > 0) { %>
                 <div class="unread_chat_count badge"><%= room.unread_chat_count %></div>
                 <% }  else { %>
                     <div class="unread_chat_count badge" style="visibility: hidden;"></div>
@@ -110,7 +110,7 @@
                     <% friends.friendsList.forEach(function(friend, index) { %>
                         <label>
                             <li>
-                              <img src="<%= friend.profile_img_url %>" alt="profile Image">
+                              <img src="<%= friend.profile_img_url ? friend.profile_img_url : '/images/basic_profile.jpg' %>" alt="profile Image">
                               <p><%= friend.friend_name %></p>
                               <input type="radio" name="friend" value="<%= friend.friend_id %>">
                             </li>

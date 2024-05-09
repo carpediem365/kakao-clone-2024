@@ -37,7 +37,6 @@
     <a id="friends-display-link">
         <i class="fa-solid fa-circle-info"></i>Friends' Names Display
         <i class="fa-solid fa-chevron-right fa-xs"></i> 
-        <!-- 오른쪽 화살표 -->
     </a>
 
     <main class="friends-screen">
@@ -50,7 +49,6 @@
               <div class="user-component__text ">
                 <h4 class="user-component__name"><%= profile.name %></h4>
                 <p class="user-component__status-message"><%= profile.status_message %></p>
-                <!-- <h6 class="user-component__subtitle">this text whatever</h6> -->
               </div>
             </div>
           </div>
@@ -86,7 +84,7 @@
             </li>
             <li class="nav__btn">
                 <a class="nav__link" href="/chats"> 
-                    <span class="nav_notification badge" style="<%= totalUnread > 0 ? '' : 'visibility: hidden;' %>"><%= totalUnread %></span>
+                    <span class="nav_notification badge" style = "<%= totalUnread > 0 ? '' : 'visibility: hidden;' %>"><%= totalUnread %></span>
                     <i class="fa-regular fa-comment fa-2x"></i></a>
             </li>
             <li class="nav__btn">
@@ -108,20 +106,18 @@
     <!-- 친구추가 모달 -->
     <div id="addFriendModal" class="modal">
         <div class="addFriendModal-content">
-          <span class="close-button">&times;</span>
-          <h2>친구 추가</h2>
-          <div class="addFriendModal-content_div"><span class="addFriendModal-content_choice">ID로 추가</span></div>
-          <form id="addFriendForm" method="post">
+            <span class="close-button">&times;</span>
+            <h2>친구 추가</h2>
+            <div class="addFriendModal-content_div"><span class="addFriendModal-content_choice">ID로 추가</span></div>
+            <form id="addFriendForm" method="post">
                 <input type="text" id="friendId" name="friendId"  maxlength="20" autofocus>
                 <span class="addFriendForm-counter">0/20</span>
-          </form>
-          <div class="user-info-display">
+            </form>
+        <div class="user-info-display">
             <!-- 사용자 정보 표시 영역 -->
-            
         </div>
         <div class="add-friend">
             <div class="add-friend_error-msg" display="none"></div>
-            
         </div>
         </div>
     </div>
@@ -163,8 +159,8 @@
                     </div>
             </div>
             <div class="profileEditModal-chat">
-                <i class="fas fa-comment fa-lg"></i>
-                <p class="profileEditModal-chat-text">나와의 채팅</p>
+                <i class="fas fa-comment fa-lg" onclick="initiateSelfChat()"></i>
+                <p class="profileEditModal-chat-text" onclick="initiateSelfChat()">나와의 채팅</p>
             </div>
         </div>
     </div>
@@ -173,8 +169,8 @@
       
     <script src="https://kit.fontawesome.com/5fa4e79d0c.js" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/modal.js"></script>
+    <script src="/js/addFriendModal.js"></script>
     <script src="/js/profileModal.js"></script>
-    <script src="/js/friends.js"></script><!-- font awesome code kit -->
+    <script src="/js/friends.js"></script>
 </body>
 </html>

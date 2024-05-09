@@ -254,7 +254,9 @@
   border-radius: 30%;
   margin-bottom: 18px;
 }
-
+.fa-lg{
+  cursor:pointer;
+}
 .profileEditModal-edit-profile{
   font-size: 18px;
   color: rgb(255, 255, 255);

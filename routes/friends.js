@@ -9,7 +9,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function(req,file,cb) {
-    cb(null, path.join(__dirname, '../public/uploads'));
+    cb(null, config.uploadPath);
   },
   filename: function(req,file,cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
@@ -23,14 +23,11 @@ router.get('/', async (req, res) => {
       return res.redirect('/login'); // 사용자가 로그인하지 않았다면 로그인 페이지로 리다이렉트
     }
     const loggedInUser = req.session.user;
-    console.log("logged in user: ", loggedInUser);
     try {
     // 친구 목록 및 프로필 정보 조회
     const friendsList = await User.getFriendsList(loggedInUser.user_id);
     const profileInfo = await User.getProfileInfo(loggedInUser.user_id);
     const {totalUnread} = await ChatModel.getUserChatRooms(loggedInUser.user_id);
-    console.log("profileInfo: ", profileInfo)
-    console.log("친구정보입니다.",friendsList);
     res.render('friends', {
       profile: profileInfo, // 프로필 정보
       friends: friendsList, // 친구 목록 전달
@@ -49,13 +46,10 @@ router.get('/check-user/:friendId', async (req, res) => {
   if (!userId) {
       return res.status(401).json({ message: '로그인이 필요합니다.' });
   }
-
     try {
         const checkResult = await User.checkUserAndFriendship(userId, friendId);
-        console.log("checkResult값:",checkResult)
         res.json(checkResult);
     } catch (error) {
-        console.error("여기인가3",error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -63,7 +57,6 @@ router.get('/check-user/:friendId', async (req, res) => {
 router.post('/add-friend', async (req, res) => {
   const userId = req.session.user ? req.session.user.user_id : null;
   const friendId = req.body.friendId;
-  console.log("친구요청 데이터",req.body);
 
   if (!userId) {
       return res.status(401).send('로그인이 필요합니다.');
@@ -71,13 +64,10 @@ router.post('/add-friend', async (req, res) => {
 
   try {
       const result = await User.addFriend(userId, friendId);
-      console.log("result1",result);
       if (result) {
         res.json({ success: true});
       } else {
-        console.log("실패result",result);
         res.status(400).json({ success: false, message: '친구 추가에 실패했습니다.' });
-        
       }
   } catch (error) {
       console.error(error);
@@ -92,13 +82,8 @@ router.get('/:id' , async (req,res) => {
   if(userId === req.session.user.user_id){
     responseData = await User.getProfileInfo(userId);
   }else{
-    console.log("/id 요청",userId,req.session.user.user_id)
     const [profileInfo, friendInfo]  = await User.getFriendProfileInfo(userId,req.session.user.user_id);
-    console.log("/id 요청friend",friendInfo)
-    console.log("/id 요청friend",profileInfo)
     if (friendInfo) {  // friendInfo가 존재하는지 확인
-      console.log("/id 요청friend", friendInfo);
-      console.log("/id 요청friend", profileInfo);
       responseData = {
           profileInfo, // 친구의 프로필 정보
           friendName: friendInfo.friend_name // 친구 목록에서의 이름
@@ -117,8 +102,6 @@ router.post('/update-profile/:userId',async (req,res) => {
   const updateData = req.body;
   
   try{
-    console.log("프로필업데이트중req",req.session.user);
-    console.log("프로필업데이트중req",req.session.user.user_id);
     let result;
     if(userId === req.session.user.user_id){
       // 로그인한 사용자의 프로필 업데이트
@@ -144,9 +127,7 @@ router.post('/upload-profile-image', upload.single('profileImage'), async (req, 
       return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
 
-  const baseUrl = config.BASE_URL;
-  // 파일 경로 업데이트 로직
-  const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+  const imageUrl = `${config.BASE_URL}/uploads/${req.file.filename}`;
   try {
       await User.updateProfile(req.session.user.user_id, { profile_img_url: imageUrl });
       res.json({ success: true, imageUrl });
@@ -158,13 +139,10 @@ router.post('/upload-profile-image', upload.single('profileImage'), async (req, 
 
 // 배경 이미지 업로드 라우트
 router.post('/upload-background-image', upload.single('backgroundImage'), async (req, res) => {
-  console.log("imageUrl1",req)
   if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
-  const baseUrl = config.BASE_URL;
-  // 파일 경로 업데이트 로직
-  const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+  const imageUrl = `${config.BASE_URL}/uploads/${req.file.filename}`;
   console.log("imageUrl",imageUrl)
   try {
       await User.updateProfile(req.session.user.user_id, { background_img_url: imageUrl });
@@ -182,7 +160,6 @@ router.post('/update-default-image',async(req,res) =>{
   if(!userId){
     return res.status(401).send('로그인이 필요합니다.');
   }
-
   try{
     const result = await User.updateDefaultImage(userId, imagePath, imageType);
     if(result){
