@@ -198,10 +198,10 @@ function updateTotalUnreadCount() {
 //   }
 // }
 
-// socket.on('updateFriendsList', (data) => {
-//   console.log("친구정보 소켓",data);
-//   displayFriends(data); // 검색 결과를 화면에 표시
-// });
+socket.on('updateFriendsList', (data) => {
+  console.log("친구정보 소켓",data);
+  displayFriends(data); // 검색 결과를 화면에 표시
+});
 
 window.onload = function() {
   document.getElementById('searchInput_chats').style.display = 'none';

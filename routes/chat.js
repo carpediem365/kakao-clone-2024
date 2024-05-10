@@ -146,5 +146,20 @@ router.post('/send-message/:roomId', async (req,res)=> {
     }
 })
 
+// 채팅방 삭제 라우트
+router.delete('/delete-chat/:roomId', async (req, res) => {
+    const { roomId } = req.params;
+    try {
+        const success = await ChatModel.deleteChatRoom(roomId);
+        if (success) {
+            res.json({ success: true, message: '채팅방이 성공적으로 삭제되었습니다.' });
+        } else {
+            res.status(400).json({ success: false, message: '채팅방 삭제에 실패했습니다.' });
+        }
+    } catch (error) {
+        console.error('채팅방 삭제 중 에러 발생:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+});
 module.exports = router;
 

@@ -436,6 +436,29 @@ class ChatModel {
             }
         }
     }
+
+    // 채팅방 및 관련 데이터 삭제 함수
+static async deleteChatRoom(roomId) {
+    const conn = await connect();
+    try {
+        await conn.beginTransaction();
+
+        // 관련 데이터 삭제
+        await conn.query('DELETE FROM chatting WHERE room_id = ?', [roomId]);
+        await conn.query('DELETE FROM participant WHERE room_id = ?', [roomId]);
+        const [result] = await conn.query('DELETE FROM chatting_room WHERE id = ?', [roomId]);
+        console.log("affectedRows1",result.affectedRows)
+        await conn.commit();
+        return result.affectedRows > 0;
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        if (conn) {
+            conn.end();
+        }
+    }
+}
 }
 
 

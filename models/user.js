@@ -293,6 +293,56 @@ static async updateDefaultImage(userId, imagePath, imageType){
     }
   }
 }
+
+static async removeFriend(userId, friendId) {
+  const conn = await connect();
+  try {
+    await conn.beginTransaction();  // 트랜잭션 시작
+
+    // 친구 관계 삭제
+    const deleteFriendSql = 'DELETE FROM friend WHERE my_id = ? AND friend_id = ?';
+    await conn.execute(deleteFriendSql, [userId, friendId]);
+
+    // 관련 채팅방 ID 조회
+    const selectRoomsSql = `
+      SELECT room_id FROM participant
+      WHERE user_id IN (?, ?)
+      GROUP BY room_id
+      HAVING COUNT(DISTINCT user_id) = 2;
+    `;
+    const [rooms] = await conn.execute(selectRoomsSql, [userId, friendId]);
+
+    // 각 채팅방에 대해 채팅 내용과 참가자 정보 삭제
+    for (const room of rooms) {
+      const roomId = room.room_id;
+
+      // 채팅 내용 삭제
+      const deleteChatsSql = 'DELETE FROM chatting WHERE room_id = ?';
+      await conn.execute(deleteChatsSql, [roomId]);
+
+      // 참가자 정보 삭제
+      const deleteParticipantsSql = 'DELETE FROM participant WHERE room_id = ?';
+      await conn.execute(deleteParticipantsSql, [roomId]);
+
+      // 채팅방 삭제
+      const deleteRoomSql = 'DELETE FROM chatting_room WHERE id = ?';
+      await conn.execute(deleteRoomSql, [roomId]);
+    }
+
+    await conn.commit();  // 트랜잭션 커밋
+    return true;
+  } catch (error) {
+    await conn.rollback();  // 오류 발생 시 롤백
+    console.error('친구 삭제 중 에러 발생:', error);
+    throw error;
+  } finally {
+    if (conn) {
+        conn.end();
+    }
+  }
 }
+
+}
+
 
 module.exports = User;

@@ -173,5 +173,26 @@ router.post('/update-default-image',async(req,res) =>{
   }
 });
 
+// 친구 삭제 라우트
+router.delete('/delete-friend/:friendId', async (req, res) => {
+  if (!req.session.user) {
+      return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
+  }
+
+  const friendId = req.params.friendId;
+  const userId = req.session.user.user_id;
+
+  try {
+      const result = await User.removeFriend(userId, friendId);
+      if (result) {
+          res.json({ success: true, message: '친구가 성공적으로 삭제되었습니다.' });
+      } else {
+          res.status(400).json({ success: false, message: '친구 삭제에 실패했습니다.' });
+      }
+  } catch (error) {
+      console.error('친구 삭제 중 에러 발생:', error);
+      res.status(500).json({ success: false, message: '서버 에러 발생' });
+  }
+});
 
   module.exports = router;

@@ -35,11 +35,23 @@
             <h1 class="alt-header__title"><%= roomName %></h1>
         </div>
         <div class="alt-header__column">
-            <span><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
+            <span class="search-icon"><i class="fa-solid fa-magnifying-glass fa-lg"></i></span>
             <span><i class="fa-solid fa-bars fa-lg"></i></span> 
+            <div class="alt-header__column_option_choice">
+                <p class="delete_chat">채팅방나가기</p>
+            </div>
         </div>
     </header>
-
+    <div id="search-container" style="display:none">
+        <div class="search-inner">
+        <input type="text" id="searchInput_chat" placeholder="채팅 검색..." onkeyup="searchChat(event)">
+        <div id="search-buttons" style="display: none;">
+            <button onclick="previousResult()">▲ </button>
+            <button onclick="nextResult()">▼</button>
+        </div>
+        <button onclick="clearSearch()" class="clear-search">X</button>
+    </div>
+    </div>
     <main class="main-screen main-chat">
         <% let lastDate = null; %>
         <% messages.forEach(message => { %>

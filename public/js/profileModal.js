@@ -5,10 +5,11 @@ function initializeEventListeners() {
     setupImageChangeTriggers();
     setupModalContentClick();
     editProfileKeyup();
+    optionButton();
 }
 
 const ProfileModal = {
-    currentProfileUserId: null,
+    currentUserId: null,
     editingTarget: null
 };
 
@@ -16,6 +17,7 @@ const ProfileModal = {
 // 모달 열기 함수
 function openProfileEditModal(userId) {
     ProfileModal.currentUserId = userId;
+    console.log("현재 아이디 currnet",ProfileModal.currentUserId)
     document.getElementById('profileEditModal').style.display = 'block';
 }
 
@@ -24,6 +26,7 @@ function closeProfileEditModal() {
     document.getElementById('profileEditModal').style.display = 'none';
     // 이미지 선택 옵션 숨김
     document.querySelector('.profileEditModal-header_img_choice').style.display = 'none';
+    document.querySelector('.profileEditModal-header_option_choice').style.display = 'none';
     document.querySelector('.profileEditModal-body_img_choice').style.display = 'none';
     document.querySelector('.profileEditModal-body_edit').style.display = 'none';
 }
@@ -64,21 +67,57 @@ function setupImageChangeTriggers() {
     });
 }
 
+// 친구삭제 옵션버튼
+function optionButton(){
+    document.querySelector('.profileEditModal-header .fa-solid.fa-bars').addEventListener('click', function(){
+        const headerOption = document.querySelector('.profileEditModal-header_option_choice');
+        headerOption.style.display = headerOption.style.display === 'none' ? 'block' : 'none'; // 
+});
+}
+
 // 모달 콘텐츠 클릭 이벤트를 설정하는 함수
 function setupModalContentClick() {
     document.querySelector('.profileEditModal-content').addEventListener('click', function(event) {
         const headerChoice = document.querySelector('.profileEditModal-header_img_choice');
+        const optionChoice = document.querySelector('.profileEditModal-header_option_choice');
         const bodyChoice = document.querySelector('.profileEditModal-body_img_choice');
 
         // 이벤트 대상이 이미지 선택 옵션 또는 이미지 아이콘이 아닌 경우에만 선택 옵션을 닫습니다.
         if (!headerChoice.contains(event.target) && !event.target.closest('.fas.fa-image')) {
             headerChoice.style.display = 'none';
         }
+
+        if(!optionChoice.contains(event.target) && !event.target.closest('.fa-solid.fa-bars')){
+            optionChoice.style.display = 'none';
+        }
         if (!bodyChoice.contains(event.target) && !event.target.closest('.profileEditModal-profile-img')) {
             bodyChoice.style.display = 'none';
         }
     });
 }
+
+document.querySelector('.delete_friend').addEventListener('click', function(){
+    if (!confirm('이 친구를 목록에서 삭제하시겠습니까?')) {
+        return;
+    }
+    const userId = ProfileModal.currentUserId; // 현재 프로필의 사용자 ID 가져오기
+    fetch(`/friends/delete-friend/${userId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('친구가 성공적으로 삭제되었습니다.');
+            window.location.reload(); // 페이지를 새로고침하여 변경사항 반영
+        } else {
+            alert('친구 삭제에 실패했습니다: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('친구 삭제 중 오류 발생:', error);
+        alert('친구 삭제 과정에서 오류가 발생했습니다.');
+    });
+});
 
     // 프로필 편집 아이콘 클릭 이벤트
     document.querySelector('.edit-profile-name').addEventListener('click', function() {
@@ -148,6 +187,8 @@ document.querySelector('.my-profile').addEventListener('click', function() {
                 openProfileEditModal(myId);
                 document.querySelector('.profileEditModal_icon').style.display = 'block';
                 document.querySelector('.edit-statusMessage').style.display = 'block';
+                document.querySelector('.profileEditModal-header .fa-solid.fa-bars').style.display = 'none';
+
             })
             .catch(error => {
                 console.error('Error fetching friend data:', error);
@@ -178,6 +219,7 @@ document.querySelector('.friends-screen__list').addEventListener('click', functi
                 openProfileEditModal(friendId);
                 document.querySelector('.profileEditModal_icon').style.display = 'none'; // 연필수정버튼
                 document.querySelector('.edit-statusMessage').style.display = 'none';
+                document.querySelector('.profileEditModal-header .fa-solid.fa-bars').style.display = 'block';
             })
             .catch(error => {
                 console.error('Error fetching friend data:', error);

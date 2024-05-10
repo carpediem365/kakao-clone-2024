@@ -127,6 +127,6 @@ app.use('/settings',settingsRoutes);
 
 // 서버 시작
 const port = 3000;
-server.listen(port, () => {
+server.listen(port, '192.168.0.16', () => {
   console.log(`Server is running on port ${port}`);
 });

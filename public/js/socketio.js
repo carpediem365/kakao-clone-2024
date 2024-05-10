@@ -2,7 +2,37 @@ const socket = io(); // 소켓 연결 초기화
 const chatScreen = document.getElementById('chat-screen');
 const currentUserId = chatScreen.getAttribute('data-user-id');
 const currentRoomId = chatScreen.getAttribute('data-room-id');
-// const senderName = document.querySelector(".message__author").textContent;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.fa-bars'); // 메뉴 토글 버튼 선택
+    const optionChoice = document.querySelector('.alt-header__column_option_choice'); // 옵션 메뉴 선택
+
+    menuToggle.addEventListener('click', function() {
+        // display 상태 토글
+        optionChoice.style.display = optionChoice.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // 메뉴 외부 클릭 시 메뉴 숨기기
+    document.addEventListener('click', function(e) {
+        if (!menuToggle.contains(e.target) && !optionChoice.contains(e.target)) {
+            optionChoice.style.display = 'none';
+        }
+    });
+});
+// // 알림 권한 요청
+// function requestNotificationPermission() {
+//     console.log("알림메시지1")
+//     if (!("Notification" in window)) {
+//         console.error("This browser does not support desktop notification");
+//     } else if (Notification.permission === "default") {
+//         Notification.requestPermission(function(result){
+//             if(result=='denied'){alert('알림을차단하셨습니다.\n브라우저의사이트설정에서변경하실수있습니다.');
+//             returnfalse;}});
+
+//     }
+// }
+
+
 socket.emit('joinRoom', { currentRoomId, currentUserId });
 // socket.emit('setup',{currentUserId})
 // 스크롤을 맨 아래로 내리는 함수 정의
@@ -18,8 +48,8 @@ function scrollToBottom() {
 window.onload = function() {
     console.log("페이지 로드시 스크롤")
     scrollToBottom();
-};
 
+};
 
 const messageForm = document.getElementById('message-form');
 // const roomId = document.body.getAttribute('data-room-id'); // 채팅방 ID를 body 태그의 데이터 속성에서 추출
@@ -57,21 +87,6 @@ const messageForm = document.getElementById('message-form');
             }
         }
     });
-
-
-// // 메시지 전송 처리
-// document.querySelector('.reply').addEventListener('submit', (e) => {
-//     e.preventDefault();
-//     const messageInput = document.querySelector('#message-input');
-//     const message = messageInput.value;
-//     console.log("메시지전송",message);
-//     if(message){
-//         const { name, profileImgUrl,friendName } = participants[userId];
-//         socket.emit('chatMessage', { roomId, userId, message,profileImgUrl,senderName:friendName,participantId});
-//         console.log("메시지 전송처리",roomId, userId, message,profileImgUrl,friendName,participantId);
-//         messageInput.value = '';
-//     }
-// });
 
  // 메시지 수신 처리
 socket.on('message', ({ roomId, userId, message,messageId,time,profileImgUrl,senderName,unreadCount}) => {
@@ -146,6 +161,102 @@ socket.on('messageRead', ({messageId,currentUserId,unread_Count}) => {
     })
 });
 
+document.querySelector('.delete_chat').addEventListener('click', function() {
+    if (!confirm('정말로 채팅방을 나가시겠습니까?')) {
+        return;
+    }
+    fetch(`/chat/delete-chat/${currentRoomId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('친구가 성공적으로 삭제되었습니다.');
+            window.location.href = '/chats'; // 페이지를 새로고침하여 변경사항 반영
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('친구 삭제 중 오류 발생:', error);
+        alert('친구 삭제 과정에서 오류가 발생했습니다.');
+    });
+});
+
+document.querySelector('.search-icon').addEventListener('click', () => {
+    const input = document.getElementById('searchInput_chat');
+    const  searchContainer = document.getElementById('search-container');
+    const mainScreen = document.querySelector('.main-screen');
+    if (searchContainer.style.display === 'none') {
+        searchContainer.style.display = 'block';
+        input.style.width = '95%';
+        document.getElementById('search-buttons').style.display = 'none';
+        mainScreen.style.paddingTop = '40px';
+    } else {
+        searchContainer.style.display = 'none';
+        document.getElementById('search-buttons').style.display = 'none';
+        mainScreen.style.paddingTop = '0px'; 
+    }
+});
+
+let currentSearchIndex = 0;
+let searchResults = [];
+
+function searchChat(event) {
+    if (event.keyCode === 13) {
+        const input = document.getElementById('searchInput_chat');
+        const filter = input.value.toUpperCase();
+        const messages = document.querySelectorAll('.message__bubble');
+        searchResults = [];
+        currentSearchIndex = 0;
+
+        if (filter.length > 0) {
+            document.getElementById('search-buttons').style.display = 'inline-block';
+            messages.forEach((msg, index) => {
+                const text = msg.textContent || msg.innerText;
+                if (text.toUpperCase().includes(filter)) {
+                    searchResults.push(msg);
+                    msg.innerHTML = text.replace(new RegExp(input.value, 'gi'), (match) => `<span class="highlight">${match}</span>`);
+                } else {
+                    msg.innerHTML = text; // Remove any existing highlights if the filter does not match
+                }
+            });
+
+            if (searchResults.length > 0) {
+                searchResults[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                input.style.width = '79%';
+                document.getElementById('search-buttons').style.display = 'inline-block';
+            } else {
+                document.getElementById('search-buttons').style.display = 'none';
+            }
+        }
+    }
+
+}
+
+function nextResult() {
+    if (searchResults.length > 1) {
+        currentSearchIndex = (currentSearchIndex + 1) % searchResults.length;
+        searchResults[currentSearchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function previousResult() {
+    if (searchResults.length > 1) {
+        currentSearchIndex = (currentSearchIndex - 1 + searchResults.length) % searchResults.length;
+        searchResults[currentSearchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function clearSearch() {
+    document.getElementById('searchInput_chat').value = '';
+    const messages = document.querySelectorAll('.message__bubble');
+    messages.forEach(msg => {
+        msg.innerHTML = msg.textContent || msg.innerText; // Restore original text
+    });
+    document.getElementById('search-buttons').style.display = 'none';
+    document.getElementById('search-container').style.display = 'none';
+}
 // socket.on('messageRead', ({messageId,currentUserId,unread_Count}) => {
 //     console.log("messageRead 신호")
 //     const unreadCountElement = document.querySelector(`.unread-count-${messageId}`);

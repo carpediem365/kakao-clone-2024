@@ -78,7 +78,7 @@ function checkUserAndShowAddButton(friendId) {
 function displayUserInfo(userInfo, displayChat = false) {
     // 사용자 정보 표시 로직
     const userInfoDisplay = document.querySelector('.user-info-display');
-    userInfoDisplay.innerHTML = `<img src="${userInfo.profile_img_url}" alt="Profile Image" />
+    userInfoDisplay.innerHTML = `<img src="${userInfo.profile_img_url ? userInfo.profile_img_url : '/images/basic_profile.jpg'}" alt="Profile Image" />
                                 <p>${userInfo.name}</p>
                                 `;
     // 채팅 또는 친구 추가 버튼 표시

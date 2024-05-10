@@ -26,7 +26,41 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  .alt-header__column:last-child i.fa-magnifying-glass{
+    padding-right: 10px;
+  }
   
   .alt-header__column span:last-child {
     margin-left: 20px;
+  }
+
+  .alt-header__column {
+    position: relative; /* 상위 요소를 relative로 설정 */
+  }
+  
+  .alt-header__column_option_choice {
+    position: absolute;
+    width: 130px;
+    border: 1px solid rgb(100, 100, 100);
+    background: rgb(255, 255, 255);
+    text-align: start;
+    z-index: 100;
+    display: none; /* 기본적으로 숨김 */
+    top: 20px; /* 버튼 바로 아래에 위치 */
+    left: 40px; /* 왼쪽 정렬 */
+  }
+
+  .alt-header__column_option_choice p {
+    color: rgb(0, 0, 0);
+    font-size: 12px;
+    min-height: 19px;
+    padding: 7px 5px;
+    cursor: pointer;
+    background: transparent; /* 기본 배경색 */
+    transition: background 0.3s; /* 부드러운 배경색 변경 효과 */
+  }
+  
+  .alt-header__column_option_choice p:hover {
+    background: rgb(240, 240, 240); /* 호버 시 배경색 변경 */
   }

@@ -14,6 +14,9 @@
 
 .friends-screen{
     padding: 0px var(--horizontal-space);
+    padding-bottom: 80px;
+    margin-top: 25px;
+    overflow-y: auto;
 }
 
 .friends-screen__list {
@@ -214,11 +217,10 @@
 
 }
 
-
 .profileEditModal-close-button {
-  position: absolute;
+  /* position: absolute;
   top: 15px;
-  right: 15px;
+  right: 15px; */
   float: right;
   font-size: 25px;
   font-weight: bold;
@@ -235,8 +237,18 @@
 
 .profileEditModal-header{
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding: 10px;
+  position: relative;
+}
+
+.profileEditModal-close-button {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.profileEditModal_icon {
+  margin-right: 10px; /* 오른쪽 마진 추가 */
 }
 
 .profileEditModal-body {
@@ -313,17 +325,31 @@
   text-align: start;
   z-index: 100;
   left: 27px;
-  top: 27px;
+  top: 29px;
+  display: none;
+}
+
+.profileEditModal-header_option_choice{
+  position: absolute;
+  width: 130px;
+  border: 1px solid rgb(100, 100, 100);
+  background: rgb(255, 255, 255);
+  text-align: start;
+  z-index: 100;
+  left: 27px;
+  top: 29px;
   display: none;
 }
 
 .profileEditModal-header_img_choice p:hover,
-.profileEditModal-body_img_choice p:hover{
+.profileEditModal-body_img_choice p:hover,
+.profileEditModal-header_option_choice:hover{
   background: rgb(240,240,240);
 }
 
 .profileEditModal-header_img_choice p,
-.profileEditModal-body_img_choice p{
+.profileEditModal-body_img_choice p,
+.profileEditModal-header_option_choice p{
   color: rgb(0, 0, 0);
   font-size: 12px;
   min-height: 19px;
@@ -404,14 +430,10 @@
   font-weight: 900;
 }
 
-.profileEditModal_icon{
-  position: absolute;
-  top: 15px;
-  left: 15px;
-}
+
 
 #searchInput_friends,
-#searchInput_chats {
+#searchInput_chats{
   display: none;
   width: 90%; 
   padding: 10px; 

@@ -13,12 +13,12 @@
   }
   
   #chat-screen .status-bar {
-    z-index: 2;
+    z-index: 11;
   }
   
   #chat-screen .alt-header {
     top: 10px;
-    z-index: 1;
+    z-index: 10;
   }
   
   @keyframes fadeIn{
@@ -33,6 +33,7 @@
   }
   .main-chat {
     margin-top: 120px;
+    padding-top: 0px;
     display: flex;
     max-height: 80vh;
     overflow-y: auto;
@@ -367,3 +368,71 @@
   color: #666;   /* 메시지의 색상 설정 */
   font-size: 16px;  /* 폰트 크기 */
 }
+#search-container {
+  position: fixed;
+  top: 70px; /* 실제 헤더의 높이에 맞게 이 값을 조정하세요 */
+  width: 100%;
+  background: #abc1d1;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: none;
+  justify-content: center;
+  align-items: center; 
+  transition: top 0.3s ease;
+  z-index: 5; /* 오버레이보다는 아래, 페이지 내용보다는 위에 위치하도록 설정 */
+  
+}
+.search-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  padding: 3px 10px;
+  border: 1px solid #ccc; 
+  border-radius: 15px; 
+  background-color: rgb(246, 246, 247);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#searchInput_chat{
+  flex-grow: 1;
+  border: none;
+  padding: 8px;
+  font-size: 16px;
+  outline: none;
+  color: #333; 
+  background-color: rgb(246, 246, 247);
+  
+}
+
+.highlight {
+  background-color: black;
+  color: white;
+}
+
+#search-buttons button {
+  background-color: rgb(246, 246, 247);
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 16px;
+  color: rgb(153, 149, 149);
+}
+
+#search-buttons button:hover {
+  color: black; /* 마우스 호버 시 배경색 검정으로 변경 */
+}
+
+.clear-search {
+  background-color: rgb(246, 246, 247);
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 16px;
+  transition: background-color 0.3s ease; /* 배경 색 변경에 애니메이션 효과 추가 */
+}
+
+
+
+

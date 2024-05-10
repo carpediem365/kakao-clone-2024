@@ -126,13 +126,17 @@
 <!-- 프로필 수정 모달 -->
     <div id="profileEditModal" class="profileEditModal">
         <div class="profileEditModal-content" style="background-image: url('<%= profile.background_img_url ? profile.background_img_url : '/images/default_background.png' %>');">
-
             <div class="profileEditModal-header">
                 <i class="fas fa-image profileEditModal_icon"></i>
                 <div class="profileEditModal-header_img_choice">
                     <label><p class="realImg-upload">사진 변경</p><input type="file" id="backgroundImageInput" accept=".bmp, .png, .jpg, .jpeg" ></label>
                     <p class="img_upload">기본 이미지로 변경</p>
                 </div>
+                <i class="fa-solid fa-bars fa-lg"></i>
+                <div class="profileEditModal-header_option_choice">
+                    <p class="delete_friend">친구삭제</p>
+                </div>
+              
                 <span class="profileEditModal-close-button">&times;</span>
             </div>
             <div class="profileEditModal-body">
