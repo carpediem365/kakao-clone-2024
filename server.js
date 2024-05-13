@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
   socket.on('chatMessage', (data) => {
     console.log("chatMessage",JSON.stringify(data));
     io.to(data.currentRoomId).emit('message', {roomId: data.currentRoomId, userId: data.userId, message: data.message, messageId: data.messageId, time:new Date(), profileImgUrl: data.profileImgUrl ,senderName:data.senderName, unreadCount: data.unreadCount });
-    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, receiverId: data.receiverId, message: data.message, time:new Date(), profileImgUrl: data.profileImgUrl, friend_profileImgUrl: data.friend_profileImgUrl, senderName:data.senderName, unread_chat_count: data.unread_chat_count});
+    io.emit('updateChatsRoom', {roomId: data.currentRoomId, userId: data.userId, receiverId: data.receiverId, lastMessage: data.message, updatedAt:new Date(), profileImgUrl: data.profileImgUrl, friend_profileImgUrl: data.friend_profileImgUrl, senderName:data.senderName, unread_chat_count: data.unread_chat_count});
   });
 
   // 메시지 읽음 처리
@@ -102,6 +102,20 @@ socket.on('searchFriends', async (data) => {
       console.error('Search friends error:', error);
   }
 });
+
+socket.on('searchChats', async (data) => {
+  console.log("searchChats신호", data);
+  try{
+    const rooms = await ChatModel.searchChats(data.userId, data.filter);
+    console.log("searchChats신호1", rooms);
+    socket.emit('filteredChats', rooms);
+  } catch (error) {
+    console.error('Error searching chats:', error);
+}
+});
+
+
+
 
 socket.on('disconnect', () => {
   console.log('Client disconnected');

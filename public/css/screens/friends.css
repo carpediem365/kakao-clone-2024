@@ -17,6 +17,8 @@
     padding-bottom: 80px;
     margin-top: 25px;
     overflow-y: auto;
+    scrollbar-width: none;
+    max-height: 77vh
 }
 
 .friends-screen__list {

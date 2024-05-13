@@ -166,6 +166,47 @@ class ChatModel {
         }
     }
 
+    static async searchChats(userId, query) {
+        console.log("searchChats 함수",userId,query);
+        const conn = await connect();
+        try {
+            const baseSql = `
+                SELECT cr.*, p.unread_chat_count, p.last_read_chat_id, cr.updated_at, p.room_name
+                FROM chatting_room AS cr
+                JOIN participant AS p ON cr.id = p.room_id
+                WHERE p.user_id = ? AND p.visible = TRUE
+            `;
+            let sql, params;
+
+            if (query.trim() === "") {
+                sql = `${baseSql} ORDER BY cr.updated_at DESC`;
+                params = [userId];
+            } else {
+                sql = `${baseSql} AND p.room_name LIKE CONCAT('%', ?, '%') ORDER BY cr.updated_at DESC`;
+                params = [userId, query];
+            }
+            
+            const [chatRooms] = await conn.execute(sql, params);
+            console.log("searchChats 함수 chatRooms: ",chatRooms);
+            for (let room of chatRooms) {
+                const participantSql = `
+                    SELECT u.user_id, u.name, u.profile_img_url as friend_profileImgUrl
+                    FROM participant AS p
+                    JOIN user AS u ON p.user_id = u.user_id
+                    WHERE p.room_id = ?;
+                `;
+                const [participants] = await conn.execute(participantSql, [room.id]);
+                room.participants = participants; // 각 방의 참여자 정보를 추가합니다.
+            }
+            console.log("searchChats 함수 chatRooms2: ",chatRooms);
+            return chatRooms;
+        } catch (error) {
+            console.error('Error searching chats:', error);
+            throw error;
+        }
+    }
+
+
     //채팅방 정보 조회
     static async getChatRoomInfo(roomId,userId){
         const conn = await connect();

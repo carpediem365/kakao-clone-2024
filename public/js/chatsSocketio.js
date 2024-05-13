@@ -1,5 +1,9 @@
 const socket = io(); // 소켓 연결 초기화
-
+let currentUserId = null;
+document.addEventListener('DOMContentLoaded', function() {
+  const mainElement = document.querySelector('main');
+  currentUserId = mainElement.getAttribute('data-user-id');
+});
 // 시간 포맷팅 함수 추가
 function formatChatTime(updatedAt) {
     const chatDate = new Date(updatedAt);
@@ -51,13 +55,13 @@ function createRoomElement(roomData) {
           <div class="user-component__column">
           <img src="${roomData.friend_profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
               <div class="user-component__text">
-                  <h4 class="user-component__title">${roomData.senderName || updatedRoom.userId}</h4>
-                  <h6 class="user-component__subtitle">${roomData.message}</h6>
+                  <h4 class="user-component__title">${roomData.senderName || roomData.userId}</h4>
+                  <h6 class="user-component__subtitle">${roomData.lastMessage}</h6>
               </div>
           </div>
           <div class="user-component__column">
-              <span class="user-component__time">${formatChatTime(roomData.time)}</span>
-              <div class="unread_chat_count badge" style="visibility: hidden;">0</div>
+              <span class="user-component__time">${formatChatTime(roomData.updatedAt)}</span>
+              <div class="unread_chat_count badge" style="visibility: hidden;">${roomData.unread_chat_count}</div>
           </div>
       </a>
   `;
@@ -65,8 +69,8 @@ function createRoomElement(roomData) {
 }
 
 function updateRoomDetails(roomElement, updatedRoom) {
-  const formattedTime = formatChatTime(updatedRoom.time);
-  roomElement.querySelector('.user-component__subtitle').textContent = updatedRoom.message;
+  const formattedTime = formatChatTime(updatedRoom.updatedAt);
+  roomElement.querySelector('.user-component__subtitle').textContent = updatedRoom.lastMessage;
   roomElement.querySelector('.user-component__time').textContent = formattedTime;
   const unreadCountBadge = roomElement.querySelector('.unread_chat_count');
   if (updatedRoom.unread_chat_count > 0) {
@@ -189,18 +193,48 @@ function updateTotalUnreadCount() {
     }
 };
 
-// function filterFriends() {
-//   var searchInput = document.getElementById('searchInput_friends');
-//   const filter = searchInput.value.toUpperCase();
-
-//   if (searchInput.style.display === 'block' && filter.length >= 0) {
-//       socket.emit('searchChats', { searchTerm: filter, userId: currentUserId });
-//   }
-// }
-
 socket.on('updateFriendsList', (data) => {
   console.log("친구정보 소켓",data);
   displayFriends(data); // 검색 결과를 화면에 표시
+});
+
+
+function filterChats() {
+  var searchInput = document.getElementById('searchInput_chats');
+  const filter = searchInput.value.toUpperCase();
+  if (searchInput.style.display === 'block' && filter.length >= 0) {
+    console.log("filterChats함수 동작",filter)
+      socket.emit('searchChats', {filter, userId:currentUserId})
+  }
+}
+
+socket.on('filteredChats', (rooms) => {
+  console.log("검색된 채팅방",rooms)
+  const mainScreen = document.querySelector('main.main-screen');
+  mainScreen.innerHTML = '';
+  rooms.forEach(room => {
+    // 현재 사용자가 아닌 다른 참여자 찾기
+    const otherParticipant = room.participants.find(p => p.user_id !== currentUserId) || room.participants[0];
+
+    const roomHTML = `
+        <a href="chat/${room.id}" id="room-${room.id}">
+        <div id="chatsPart" class="user-component">
+            <div class="user-component__column">
+                <img src="${otherParticipant.friend_profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
+                <div class="user-component__text">
+                    <h4 class="user-component__title">${room.room_name}</h4>
+                    <h6 class="user-component__subtitle">${room.last_chat || ""}</h6>
+                </div>
+            </div>
+            <div class="user-component__column">
+                <span class="user-component__time">${formatChatTime(room.updated_at)}</span>
+                <div class="unread_chat_count badge" style="${room.unread_chat_count > 0 ? 'visibility: visible;' : 'visibility: hidden;'}">${room.unread_chat_count}</div>
+            </div>
+            </div>
+        </a>
+    `;
+    mainScreen.innerHTML += roomHTML;
+});
 });
 
 window.onload = function() {

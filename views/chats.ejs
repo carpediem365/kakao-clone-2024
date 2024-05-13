@@ -32,10 +32,10 @@
             <span><a href="/settings"><i class="fa-solid fa-gear fa-lg"></i></a></span>
         </div>
     </header>
-    <input type="text" id="searchInput_chats" placeholder="친구 검색..." oninput="filterFriends()">
+    <input type="text" id="searchInput_chats" placeholder="채팅방 검색..." oninput="filterChats()">
    
 
-    <main class="main-screen">
+    <main class="main-screen user-component__screen" data-user-id="<%=userId%>">
         <% if (chatRooms.length > 0) { %>
         <% chatRooms.forEach(room => { %>
             <% const otherParticipant = room.participants.find(participant => participant.user_id !== currentUserId) || room.participants[0]; %>
@@ -44,7 +44,7 @@
             <div class="user-component__column">
               <img
               src="<%= otherParticipant.profile_img_url ? otherParticipant.profile_img_url : '/images/basic_profile.jpg' %>"
-                class="user-component__avatar user-component__avatar"
+                class="user-component__avatar"
               />
               <div class="user-component__text">
                 <h4 class="user-component__title"><%= room.room_name %></h4>

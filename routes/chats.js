@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
         // console.log("chatRooms2: ", chatRooms[0].participants);
         // console.log("chatRooms3: ", chatRooms[0].participants[0]);
         console.log("친구정보: ", friends);
-        res.render('chats', {chatRooms: chatRooms, currentUserId : userId, friends:friends, totalUnread:totalUnread});
+        res.render('chats', {userId, chatRooms: chatRooms, currentUserId : userId, friends:friends, totalUnread:totalUnread});
         // 채팅 데이터를 불러오는 로직 구현
         // 예: const chats = await ChatModel.getChats();
         // res.render('chatPage', { chats: chats });
