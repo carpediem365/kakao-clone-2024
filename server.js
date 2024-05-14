@@ -140,7 +140,7 @@ app.use('/more',moreRoutes);
 app.use('/settings',settingsRoutes);
 
 // 서버 시작
-const port = 3000;
-server.listen(port, '192.168.0.16', () => {
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

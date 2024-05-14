@@ -1,7 +1,6 @@
 const connect = require('../db');
 // const bcrypt = require('bcrypt');
 const bcrypt = require('bcryptjs');
-
 const saltRounds = 10;
 
 class User {
