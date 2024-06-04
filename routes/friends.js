@@ -7,15 +7,16 @@ const config = require('../config/config');
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function(req,file,cb) {
-    cb(null, config.uploadPath);
-  },
-  filename: function(req,file,cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
-
+// 로컬 저장용
+// const storage = multer.diskStorage({
+//   destination: function(req,file,cb) {
+//     cb(null, config.uploadPath);
+//   },
+//   filename: function(req,file,cb) {
+//     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+//   }
+// });
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.get('/', async (req, res) => {
@@ -124,32 +125,29 @@ router.post('/update-profile/:userId',async (req,res) => {
 // 프로필 이미지 업로드 라우트
 router.post('/upload-profile-image', upload.single('profileImage'), async (req, res) => {
   if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
 
-  const imageUrl = `${config.BASE_URL}/uploads/${req.file.filename}`;
   try {
-      await User.updateProfile(req.session.user.user_id, { profile_img_url: imageUrl });
-      res.json({ success: true, imageUrl });
+    await User.updateProfile(req.session.user.user_id, { profile_img: req.file.buffer });
+    res.json({ success: true });
   } catch (error) {
-      console.error('Error uploading profile image:', error);
-      res.status(500).json({ success: false, message: 'Error uploading image' });
+    console.error('Error uploading profile image:', error);
+    res.status(500).json({ success: false, message: 'Error uploading image' });
   }
 });
 
-// 배경 이미지 업로드 라우트
 router.post('/upload-background-image', upload.single('backgroundImage'), async (req, res) => {
   if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
   }
-  const imageUrl = `${config.BASE_URL}/uploads/${req.file.filename}`;
-  console.log("imageUrl",imageUrl)
+
   try {
-      await User.updateProfile(req.session.user.user_id, { background_img_url: imageUrl });
-      res.json({ success: true, imageUrl });
+    await User.updateProfile(req.session.user.user_id, { background_img: req.file.buffer });
+    res.json({ success: true });
   } catch (error) {
-      console.error('Error uploading background image:', error);
-      res.status(500).json({ success: false, message: 'Error uploading image' });
+    console.error('Error uploading background image:', error);
+    res.status(500).json({ success: false, message: 'Error uploading image' });
   }
 });
 
