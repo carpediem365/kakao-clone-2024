@@ -16,7 +16,7 @@ class User {
     const conn = await connect();
     try {
       const hashedPassword = await bcrypt.hash(this.passWord, saltRounds);
-      const sql = 'INSERT INTO User (user_id, password, phone_number, name) VALUES (?, ?, ?, ?)';
+      const sql = 'INSERT INTO user (user_id, password, phone_number, name) VALUES (?, ?, ?, ?)';
       await conn.execute(sql, [this.userId, hashedPassword, this.phoneNumber, this.userName]);
     } catch (error) {
       console.error('Error saving user to the database:', error);
