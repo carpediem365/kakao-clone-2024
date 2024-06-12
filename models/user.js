@@ -225,6 +225,7 @@ static async addFriend(userId, friendId) {
       queryParams.push(userId);
 
       const [result] = await conn.execute(updateQuery, queryParams);
+      
       conn.end();
 
       return result.affectedRows > 0;

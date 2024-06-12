@@ -42,10 +42,10 @@
     <main class="friends-screen">
         <div class="user-component">
             <div class="user-component__column my-profile" data-user-id="<%=profile.user_id %>">
-              <img
-              src="<%= profile.profile_img_url ? profile.profile_img_url : '/images/basic_profile.jpg' %>"
+                <img
+                src="<%= profile.profile_img_url ? 'data:image/jpeg;base64,' + profile.profile_img_url : '/images/basic_profile.jpg' %>"
                 class="user-component__avatar user-component__avatar--xl" id="profileImg"
-              />
+            />
               <div class="user-component__text ">
                 <h4 class="user-component__name"><%= profile.name %></h4>
                 <p class="user-component__status-message"><%= profile.status_message %></p>
@@ -140,7 +140,7 @@
                 <span class="profileEditModal-close-button">&times;</span>
             </div>
             <div class="profileEditModal-body">
-                <img src="data:image/jpeg;base64,<%= profile.profile_img ? profile.profile_img.toString('base64') : '' %>" alt="Profile Image" class="profileEditModal-profile-img">
+                <img src="data:image/jpeg;base64,<%= profile.profile_img_url %>" alt="Profile Image" class="profileEditModal-profile-img">
                 <div class="profileEditModal-body_img_choice">
                     <label><p class="realImg-upload">사진 변경</p><input type="file" id="profileImageInput" accept=".bmp, .png, .jpg, .jpeg" ></label>
                     <p class="img_upload">기본 이미지로 변경</p>

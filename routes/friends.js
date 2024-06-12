@@ -129,8 +129,12 @@ router.post('/upload-profile-image', upload.single('profileImage'), async (req, 
   }
 
   try {
-    await User.updateProfile(req.session.user.user_id, { profile_img: req.file.buffer });
-    res.json({ success: true });
+    // Buffer에서 Base64 인코딩으로 변환
+    const base64Image = Buffer.from(req.file.buffer).toString('base64');
+    console.log("base64Image",base64Image);
+    // 데이터베이스에 Base64 인코딩된 이미지 저장
+    await User.updateProfile(req.session.user.user_id, { profile_img_url: base64Image });
+    res.json({ success: true, imageUrl: `data:image/jpeg;base64,${base64Image}` });
   } catch (error) {
     console.error('Error uploading profile image:', error);
     res.status(500).json({ success: false, message: 'Error uploading image' });
