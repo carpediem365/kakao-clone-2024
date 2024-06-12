@@ -47,13 +47,13 @@ socket.on('updateChatsRoom', (updatedRoom) => {
 });
 
 function createRoomElement(roomData) {
-  const roomElement = document.createElement('div');
+  const roomElement = document.createElement('a');
+  roomElement.href = `chat/${roomData.roomId}`;
   roomElement.id = `room-${roomData.roomId}`;
-  roomElement.className = 'user-component';
   roomElement.innerHTML = `
-      <a href="chat/${roomData.roomId}">
+      <div id="chatsPart" class="user-component">
           <div class="user-component__column">
-          <img src="${roomData.friend_profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
+              <img src="${roomData.friend_profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
               <div class="user-component__text">
                   <h4 class="user-component__title">${roomData.senderName || roomData.userId}</h4>
                   <h6 class="user-component__subtitle">${roomData.lastMessage}</h6>
@@ -61,9 +61,9 @@ function createRoomElement(roomData) {
           </div>
           <div class="user-component__column">
               <span class="user-component__time">${formatChatTime(roomData.updatedAt)}</span>
-              <div class="unread_chat_count badge" style="visibility: hidden;">${roomData.unread_chat_count}</div>
+              <div class="unread_chat_count badge" style="${roomData.unread_chat_count > 0 ? 'visibility: visible;' : 'visibility: hidden;'}">${roomData.unread_chat_count}</div>
           </div>
-      </a>
+      </div>
   `;
   return roomElement;
 }
