@@ -53,7 +53,7 @@ function createRoomElement(roomData) {
   roomElement.innerHTML = `
       <div id="chatsPart" class="user-component">
           <div class="user-component__column">
-              <img src="${roomData.friend_profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
+              <img src="${roomData.profileImgUrl || '/images/basic_profile.jpg'}" class="user-component__avatar">
               <div class="user-component__text">
                   <h4 class="user-component__title">${roomData.senderName || roomData.userId}</h4>
                   <h6 class="user-component__subtitle">${roomData.lastMessage}</h6>
